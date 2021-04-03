@@ -1,0 +1,47 @@
+html,
+body {
+  padding: 0;
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen,
+    Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+.dot {
+  fill: rgb(0, 0, 0);
+  opacity: 0.1;
+  z-index: 2;
+  position: relative;
+}
+
+.dot.p0 {
+  fill: rgb(255, 0, 0);
+}
+
+.dot.p1 {
+  fill: rgb(17, 0, 255);
+}
+
+.dot.p2 {
+  fill: rgb(219, 209, 70);
+}
+
+.dot.p3 {
+  fill: rgb(5, 156, 0);
+}
+
+.dot.hidden {
+  opacity: 0;
+}
+
+input[type='range'] {
+  width: 1500px;
+}
