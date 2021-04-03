@@ -9,6 +9,12 @@ import { useEffect, useRef, useState } from 'react';
 import * as d3 from 'd3';
 import Brush from '../components/Brush';
 
+interface Position {
+  frameIdx: number;
+  positionX: number;
+  positionY: number;
+}
+
 export default function Home() {
   const [data, setData] = useState<null | {
     frames: FramesType;
@@ -32,23 +38,18 @@ export default function Home() {
     })();
   }, []);
 
-  const updateDots = (
-    positions: {
-      frameIdx: number;
-      positionX: number;
-      positionY: number;
-    }[],
-    playerId: number
-  ) => {
+  const updateDots = (positions: Position[], playerId: number) => {
     const center = d3.select('.center');
     const dots = center
       .selectAll(`.dot.p${playerId}`)
-      .data(positions, d => d.frameIdx);
+      .data(positions, (d: Position) => d.frameIdx);
 
-    const dotsEnter = dots
-      .enter()
-      .append('circle')
-      .attr('class', `dot p${playerId}`);
+    const dotsEnter: d3.Selection<
+      d3.BaseType,
+      Position,
+      d3.BaseType,
+      unknown
+    > = dots.enter().append('circle').attr('class', `dot p${playerId}`);
 
     dotsEnter
       .merge(dots)
@@ -87,7 +88,7 @@ export default function Home() {
     const playerIds = Object.keys(data.metadata.players).map(id => +id);
 
     playerIds.forEach(id => {
-      d3.selectAll(`.dot.p${id}`).classed('hidden', d => {
+      d3.selectAll(`.dot.p${id}`).classed('hidden', (d: Position) => {
         return !(
           currentFrames[0] < d.frameIdx && d.frameIdx < currentFrames[1]
         );

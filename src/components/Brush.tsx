@@ -8,6 +8,10 @@ interface Props {
   setValue: (x: [number, number]) => void;
 }
 
+interface SVGElementWithValue extends SVGSVGElement {
+  value: [number, number];
+}
+
 const Brush = (props: Props) => {
   const px = 40;
   const slider = function (min: number, max: number) {
@@ -78,7 +82,7 @@ const Brush = (props: Props) => {
         // update view
         // if the view should only be updated after brushing is over,
         // move these two lines into the on('end') part below
-        svg.node().value = s.map(function (d) {
+        (svg.node() as SVGElementWithValue).value = s.map(function (d) {
           const temp = x.invert(d);
           return +temp;
         });
@@ -144,15 +148,13 @@ const Brush = (props: Props) => {
     // https://bl.ocks.org/mbostock/6498000
     gBrush
       .selectAll('.overlay')
-      .each(function (d) {
-        d.type = 'selection';
-      })
+      .datum({ type: 'selection' })
       .on('mousedown touchstart', function (event) {
         const dx = x(max / 10) - x(0), // Use a fixed width when recentering.
           cx = d3.pointer(event)[0],
           x0 = cx - dx / 2,
           x1 = cx + dx / 2;
-        d3.select(this.parentNode).call(
+        d3.select((this as SVGRectElement).parentNode).call(
           brush.move,
           x1 > width ? [width - dx, width] : x0 < 0 ? [0, dx] : [x0, x1]
         );
@@ -168,7 +170,9 @@ const Brush = (props: Props) => {
   useEffect(() => {
     sliderEl = slider(props.min, props.max);
 
-    sliderEl.addEventListener('input', e => props.setValue(sliderEl.value));
+    sliderEl.addEventListener('input', e =>
+      props.setValue((sliderEl as SVGElementWithValue).value)
+    );
   }, []);
 
   return (
