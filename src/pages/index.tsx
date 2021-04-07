@@ -8,6 +8,7 @@ import { useEffect, useRef, useState } from 'react';
 
 import * as d3 from 'd3';
 import Brush from '../components/Brush';
+import Line from '../components/Line';
 
 interface Position {
   frameIdx: number;
@@ -35,6 +36,8 @@ export default function Home() {
       const data = await response.json();
       setData(data);
       console.log(data.stats);
+      console.log(data.metadata);
+      console.log(data.frames[1000]);
     })();
   }, []);
 
@@ -74,11 +77,12 @@ export default function Home() {
       );
 
     const playerIds = Object.keys(data.metadata.players).map(id => +id);
-    console.log(playerIds);
 
     playerIds.forEach(id => {
       updateDots(getPositions(data.frames, id), id);
     });
+
+    const percents = getPercents(data.frames, data.metadata.lastFrame);
   }, [data]);
 
   useEffect(() => {
@@ -110,6 +114,26 @@ export default function Home() {
     return positions;
   };
 
+  const getPercents = (frames: FramesType, lastFrame: number) => {
+    const playerIds = Object.entries(frames[0].players)
+      .filter(([k, v]) => v != null)
+      .map(([k, v]) => +k);
+
+    const out: Record<number, [number, number][]> = {};
+
+    playerIds.map(id => {
+      const playerPercent: [number, number][] = [];
+      for (let i = 0; i < lastFrame; i++) {
+        const frame = frames[i];
+        const { percent } = frame.players[id].pre;
+        playerPercent.push([i, percent]);
+      }
+      out[id] = playerPercent;
+    });
+
+    return out;
+  };
+
   return (
     <div
       style={{
@@ -128,27 +152,31 @@ export default function Home() {
             height="500"
             style={{ border: `1px solid black` }}
           ></svg>
-          {/* <br />
-          <input
-            type="range"
-            id="progress"
-            value={currentFrame}
-            onChange={e => setCurrentFrame(+e.target.value)}
-            min={0}
-            max={data.stats.lastFrame}
-          ></input> */}
-          {/* <Range
-            min={0}
-            max={data.stats.lastFrame}
-            setValue={e => setCurrentFrames(e)}
-            value={currentFrames}
-          /> */}
-          <Brush
-            min={0}
-            max={data.stats.lastFrame}
-            setValue={e => setCurrentFrames(e)}
-            value={currentFrames}
-          />
+          <br />
+          <div
+            style={{
+              width: `80%`,
+              // marginLeft: `40px`,
+              // marginRight: `40px`,
+            }}
+          >
+            <Line data={getPercents(data.frames, data.metadata.lastFrame)} />
+            <Brush
+              min={0}
+              max={data.stats.lastFrame}
+              setValue={e => setCurrentFrames(e)}
+              value={currentFrames}
+              marks={data.stats.stocks.map(stock => {
+                return [stock.endFrame, `Player ${stock.playerIndex} dies`];
+              })}
+              bands={data.stats.conversions.map(conversion => {
+                return [
+                  [conversion.startFrame, conversion.endFrame],
+                  conversion.playerIndex,
+                ];
+              })}
+            />
+          </div>
         </>
       )}
     </div>

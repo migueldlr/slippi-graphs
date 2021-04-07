@@ -6,6 +6,8 @@ interface Props {
   max: number;
   value: [number, number];
   setValue: (x: [number, number]) => void;
+  bands?: [[number, number], number][];
+  marks?: [number, string][];
 }
 
 interface SVGElementWithValue extends SVGSVGElement {
@@ -13,7 +15,7 @@ interface SVGElementWithValue extends SVGSVGElement {
 }
 
 const Brush = (props: Props) => {
-  const px = 40;
+  const px = 0;
   const slider = function (min: number, max: number) {
     const range = [min, max];
 
@@ -25,7 +27,7 @@ const Brush = (props: Props) => {
     // set width and height of svg
     // const w = 300;
     // const h = 50;
-    const margin = { top: 0, bottom: 10, left: px, right: px };
+    const margin = { top: 0, bottom: 0, left: px, right: px };
 
     // dimensions of slider bar
     const width = w - margin.left - margin.right;
@@ -42,7 +44,8 @@ const Brush = (props: Props) => {
       .select('#slider')
       .append('svg')
       .style('width', `100%`)
-      .style('height', `100%`);
+      .style('height', `100%`)
+      .style('overflow', 'visible');
 
     const g = svg
       .append('g')
@@ -62,6 +65,36 @@ const Brush = (props: Props) => {
       .attr('text-anchor', 'middle')
       .attr('x', 0)
       .attr('y', height + 5);
+
+    if (props.bands != null) {
+      const bandG = g.append('g').attr('class', 'bands');
+      const bands = bandG
+        .selectAll('.band')
+        .data(props.bands)
+        .enter()
+        .append('rect')
+        .attr('class', ([k, v]) => `band p${v}`)
+        .attr('width', ([k, v]) => x(k[1] - k[0]))
+        .attr('height', 50)
+        .style('transform', ([k, v]) => {
+          return `translate(${x(k[0])}px, 0)`;
+        });
+    }
+
+    if (props.marks != null) {
+      const markG = g.append('g').attr('class', 'marks');
+      const marks = markG
+        .selectAll('.mark')
+        .data(props.marks)
+        .enter()
+        .append('rect')
+        .attr('class', 'mark')
+        .attr('width', x(20))
+        .attr('height', 50)
+        .style('transform', ([k, v]) => {
+          return `translate(${x(k - 20)}px, 0)`;
+        });
+    }
 
     // define brush
     const brush = d3

@@ -22,20 +22,48 @@ a {
   position: relative;
 }
 
-.dot.p0 {
+.p0 {
   fill: rgb(255, 0, 0);
 }
 
-.dot.p1 {
+.p1 {
   fill: rgb(17, 0, 255);
 }
 
-.dot.p2 {
+.p2 {
   fill: rgb(219, 209, 70);
 }
 
-.dot.p3 {
+.p3 {
   fill: rgb(5, 156, 0);
+}
+
+.line-plot.p0 {
+  fill: none;
+  stroke: rgb(255, 0, 0);
+}
+
+.line-plot.p1 {
+  fill: none;
+  stroke: rgb(17, 0, 255);
+}
+
+.line-plot.p2 {
+  fill: none;
+  stroke: rgb(219, 209, 70);
+}
+
+.line-plot.p3 {
+  fill: none;
+  stroke: rgb(5, 156, 0);
+}
+
+.band {
+  opacity: 0.8;
+}
+
+.mark {
+  fill: black;
 }
 
 .dot.hidden {
