@@ -161,6 +161,7 @@ export default function Home() {
             }}
           >
             <Line data={getPercents(data.frames, data.metadata.lastFrame)} />
+            <br />
             <Brush
               min={0}
               max={data.stats.lastFrame}
