@@ -1,6 +1,6 @@
 import {
-  ConsoleConnection,
   FramesType,
+  GameStartType,
   MetadataType,
   StatsType,
 } from '@slippi/slippi-js';
@@ -9,6 +9,8 @@ import { useEffect, useRef, useState } from 'react';
 import * as d3 from 'd3';
 import Brush from '../components/Brush';
 import Line from '../components/Line';
+import LineTwo from '../components/LineTwo';
+import { PlayerInput } from '@slippi/slippi-js/dist/stats/inputs';
 
 interface Position {
   frameIdx: number;
@@ -21,6 +23,8 @@ export default function Home() {
     frames: FramesType;
     stats: StatsType;
     metadata: MetadataType;
+    settings: GameStartType;
+    inputs: Record<number, PlayerInput[]>;
   }>(null);
 
   const [currentFrames, setCurrentFrames] = useState<[number, number]>([
@@ -37,7 +41,8 @@ export default function Home() {
       setData(data);
       console.log(data.stats);
       console.log(data.metadata);
-      console.log(data.frames[1000]);
+      console.log(Object.keys(data.frames).length);
+      console.log(data.inputs);
     })();
   }, []);
 
@@ -82,7 +87,8 @@ export default function Home() {
       updateDots(getPositions(data.frames, id), id);
     });
 
-    const percents = getPercents(data.frames, data.metadata.lastFrame);
+    // const percents = getPercents(data.frames, data.metadata.lastFrame);
+    // getAPM(data.settings, data.frames);
   }, [data]);
 
   useEffect(() => {
@@ -160,7 +166,8 @@ export default function Home() {
               // marginRight: `40px`,
             }}
           >
-            <Line data={getPercents(data.frames, data.metadata.lastFrame)} />
+            <Line data={getPercents(data.frames, data.stats.lastFrame)} />
+            <LineTwo data={data.inputs} />
             <br />
             <Brush
               min={0}
@@ -183,3 +190,5 @@ export default function Home() {
     </div>
   );
 }
+
+export const ususedExport = 'this turns off fast refresh';
