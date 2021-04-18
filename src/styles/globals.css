@@ -38,22 +38,22 @@ a {
   fill: rgb(5, 156, 0);
 }
 
-.line-plot.p0 {
+.line.p0 {
   fill: none;
   stroke: rgb(255, 0, 0);
 }
 
-.line-plot.p1 {
+.line.p1 {
   fill: none;
   stroke: rgb(17, 0, 255);
 }
 
-.line-plot.p2 {
+.line.p2 {
   fill: none;
   stroke: rgb(219, 209, 70);
 }
 
-.line-plot.p3 {
+.line.p3 {
   fill: none;
   stroke: rgb(5, 156, 0);
 }
