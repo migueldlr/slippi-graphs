@@ -1,28 +1,28 @@
 import { FramesType, StatsType } from '@slippi/slippi-js';
 import React, { memo, useEffect, useRef, useState } from 'react';
-import { getPercents } from '../util/calc';
+import { getAPM, getPercents } from '../util/calc';
+import { InputsType } from '../util/types';
 import LineD3 from './line-d3';
 
 interface Props {
-  frames: FramesType;
-  stats: StatsType;
+  inputs: InputsType;
   frame: number;
   setFrame: React.Dispatch<React.SetStateAction<number>>;
 }
 
 let vis: LineD3;
 
-const Line = ({ frames, stats, frame, setFrame }: Props) => {
+const Line = ({ inputs, frame, setFrame }: Props) => {
   const ref = useRef(null);
 
   useEffect(() => {
-    vis = new LineD3(ref.current, getPercents(frames, stats.lastFrame));
+    vis = new LineD3(ref.current, getAPM(inputs));
   }, []);
 
   useEffect(() => {
     console.log('updating data??');
-    vis.updateData(getPercents(frames, stats.lastFrame));
-  }, [frames, stats.lastFrame]);
+    vis.updateData(getAPM(inputs));
+  }, [inputs]);
 
   useEffect(() => {
     vis.updateFrame(frame);

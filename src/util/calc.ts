@@ -1,4 +1,5 @@
 import { FramesType } from '@slippi/slippi-js';
+import { PlayerInput } from '@slippi/slippi-js/dist/stats/inputs';
 
 export const getPositions = (frames: FramesType, playerId = 0) => {
   const positions: {
@@ -31,5 +32,16 @@ export const getPercents = (frames: FramesType, lastFrame: number) => {
     out[id] = playerPercent;
   });
 
+  return out;
+};
+
+export const getAPM = (data: { [playerId: number]: PlayerInput[] }) => {
+  const out: Record<number, [number, number][]> = {};
+  for (let id in data) {
+    out[id] = data[id].map((d, i) => [
+      i,
+      d.inputCount - (i < 120 ? 0 : data[id][i - 120].inputCount),
+    ]);
+  }
   return out;
 };

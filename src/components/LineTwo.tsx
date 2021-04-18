@@ -10,7 +10,6 @@ const LineTwo = ({ data: initData }: Props) => {
   useEffect(() => {
     const data: { [playerId: number]: number[] } = {};
     for (let id in initData) {
-      console.log(id);
       data[id] = initData[id].map(
         (d, i) =>
           d.inputCount - (i < 120 ? 0 : initData[id][i - 120].inputCount)
