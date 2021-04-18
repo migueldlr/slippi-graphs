@@ -109,8 +109,6 @@ export default class LineD3 {
   }
 
   onMouseMove(e: React.MouseEvent<HTMLDivElement, MouseEvent>) {
-    const markerG = this.container.select('svg').select('.marker');
-
     const xOffset = e.clientX - this.containerEl.getBoundingClientRect().x;
     if (
       xOffset > this.containerEl.getBoundingClientRect().width ||
@@ -120,7 +118,22 @@ export default class LineD3 {
     }
 
     const frame = Math.round(this.xScale.invert(xOffset));
-    markerG.attr('transform', `translate(${xOffset}, 0)`);
+
+    return frame;
+  }
+
+  updateFrame(frame?: number) {
+    const markerG = this.container.select('svg').select('.marker');
+    if (frame == null) {
+      // this.container.select('svg').select('')
+      markerG.style('visibility', 'hidden');
+      this.tooltip.style('visibility', 'hidden');
+      return;
+    }
+    markerG.style('visibility', 'visible');
+    this.tooltip.style('visibility', 'visible');
+
+    markerG.attr('transform', `translate(${this.xScale(frame)}, 0)`);
     this.playerIds.forEach(id => {
       const y = this.yScale(this.data[id][frame][1]);
       markerG
@@ -128,8 +141,11 @@ export default class LineD3 {
         .select(`.p${id}`)
         .attr('transform', `translate(0, ${y})`);
     });
-    this.tooltip.style('left', `${e.clientX}px`);
-    this.tooltip.style('top', `${e.clientY}px`);
+    this.tooltip.style('left', `${this.xScale(frame)}px`);
+    this.tooltip.style(
+      'top',
+      `${this.containerEl.getBoundingClientRect().top}px`
+    );
     this.tooltip
       .select('.text')
       .text(

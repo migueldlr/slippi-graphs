@@ -1,5 +1,5 @@
 import * as d3 from 'd3';
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import LineD3 from './line-d3';
 
 interface Props {
@@ -9,6 +9,7 @@ interface Props {
 let vis: LineD3;
 const Line = ({ data }: Props) => {
   const ref = useRef(null);
+  const [frame, setFrame] = useState<number>();
 
   useEffect(() => {
     vis = new LineD3(ref.current, data);
@@ -17,6 +18,10 @@ const Line = ({ data }: Props) => {
   useEffect(() => {
     vis.update();
   }, [data]);
+
+  useEffect(() => {
+    vis.updateFrame(frame);
+  }, [frame]);
 
   return (
     <div
@@ -27,7 +32,13 @@ const Line = ({ data }: Props) => {
         height: `200px`,
         overflow: `visible`,
       }}
-      onMouseMove={e => vis.onMouseMove(e)}
+      onMouseMove={e => {
+        const newFrame = vis.onMouseMove(e);
+        setFrame(newFrame);
+      }}
+      onMouseLeave={e => {
+        setFrame(undefined);
+      }}
     >
       <svg>
         <g className="lines" />
