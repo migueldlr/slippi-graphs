@@ -1,23 +1,27 @@
-import * as d3 from 'd3';
-import React, { useEffect, useRef, useState } from 'react';
+import { FramesType, StatsType } from '@slippi/slippi-js';
+import React, { memo, useEffect, useRef, useState } from 'react';
+import { getPercents } from '../util/calc';
 import LineD3 from './line-d3';
 
 interface Props {
-  data: { [playerId: number]: [number, number][] };
+  frames: FramesType;
+  stats: StatsType;
 }
 
 let vis: LineD3;
-const Line = ({ data }: Props) => {
+
+const Line = ({ frames, stats }: Props) => {
   const ref = useRef(null);
   const [frame, setFrame] = useState<number>();
 
   useEffect(() => {
-    vis = new LineD3(ref.current, data);
+    vis = new LineD3(ref.current, getPercents(frames, stats.lastFrame));
   }, []);
 
   useEffect(() => {
-    vis.update();
-  }, [data]);
+    console.log('updating data??');
+    vis.updateData(getPercents(frames, stats.lastFrame));
+  }, [frames, stats.lastFrame]);
 
   useEffect(() => {
     vis.updateFrame(frame);
@@ -54,4 +58,6 @@ const Line = ({ data }: Props) => {
   );
 };
 
-export default Line;
+Line.whyDidYouRender = true;
+
+export default React.memo(Line);

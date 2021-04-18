@@ -39,8 +39,6 @@ export default class LineD3 {
 
     const dataArr: DataArr = Object.entries(this.data).map(([k, v]) => [+k, v]);
 
-    console.log(dataArr);
-
     const svg = this.container
       .select('svg')
       .style('width', `100%`)
@@ -144,7 +142,7 @@ export default class LineD3 {
     this.tooltip.style('left', `${this.xScale(frame)}px`);
     this.tooltip.style(
       'top',
-      `${this.containerEl.getBoundingClientRect().top}px`
+      `${window.pageYOffset + this.containerEl.getBoundingClientRect().top}px`
     );
     this.tooltip
       .select('.text')

@@ -9,6 +9,7 @@
   },
   "dependencies": {
     "@slippi/slippi-js": "^5.1.1",
+    "@welldone-software/why-did-you-render": "^6.1.1",
     "d3": "^6.6.2",
     "next": "10.1.2",
     "rc-slider": "^9.7.2",

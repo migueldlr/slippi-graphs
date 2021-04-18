@@ -128,4 +128,6 @@ const LineTwo = ({ data: initData }: Props) => {
   );
 };
 
-export default LineTwo;
+LineTwo.whyDidYouRender = true;
+
+export default React.memo(LineTwo);
