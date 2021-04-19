@@ -11,23 +11,33 @@ import {
   StatsType,
 } from '@slippi/slippi-js';
 import { PlayerInput } from '@slippi/slippi-js/dist/stats/inputs';
+import { InputsType } from '../../util/types';
 
-const getAPM = (
+const getInputs = (
   settings: GameStartType,
   frames: FramesType,
   stats: StatsType
-) => {
+): InputsType => {
   const players = getSinglesPlayerPermutationsFromSettings(settings);
   const inputComputer = new InputComputer();
   inputComputer.setPlayerPermutations(players);
-  const inputFrames: Record<number, PlayerInput[]> = {};
+  const inputFrames: InputsType = {};
   players.forEach(id => (inputFrames[id.playerIndex] = []));
   for (let frame in frames) {
     if (+frame < 0 || +frame > stats.lastFrame) continue;
     inputComputer.processFrame(frames[frame], frames);
     const data = [...inputComputer.fetch()].map(x => ({ ...x }));
     data.forEach(datum => {
-      inputFrames[datum.playerIndex].push(datum);
+      const playerFrames = inputFrames[datum.playerIndex];
+      const prevCount =
+        playerFrames.length === 0
+          ? 0
+          : playerFrames[playerFrames.length - 1].inputCount;
+      inputFrames[datum.playerIndex].push({
+        ...datum,
+        frameIndex: +frame,
+        singleFrameInput: datum.inputCount - prevCount,
+      });
     });
   }
   return inputFrames;
@@ -42,6 +52,6 @@ export default (req, res) => {
     stats: game.getStats(),
     metadata: game.getMetadata(),
     settings: game.getSettings(),
-    inputs: getAPM(game.getSettings(), game.getFrames(), game.getStats()),
+    inputs: getInputs(game.getSettings(), game.getFrames(), game.getStats()),
   });
 };

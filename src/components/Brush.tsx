@@ -203,9 +203,10 @@ const Brush = (props: Props) => {
   useEffect(() => {
     sliderEl = slider(props.min, props.max);
 
-    sliderEl.addEventListener('input', e =>
-      props.setValue((sliderEl as SVGElementWithValue).value)
-    );
+    sliderEl.addEventListener('input', e => {
+      const val = (sliderEl as SVGElementWithValue).value;
+      props.setValue([Math.round(val[0]), Math.round(val[1])]);
+    });
   }, []);
 
   return (
@@ -223,4 +224,4 @@ const Brush = (props: Props) => {
   );
 };
 
-export default Brush;
+export default React.memo(Brush);

@@ -4,25 +4,24 @@ import { getPercents } from '../util/calc';
 import LineD3 from './line-d3';
 
 interface Props {
-  frames: FramesType;
-  stats: StatsType;
+  percents: Record<number, [number, number][]>;
   frame: number;
   setFrame: React.Dispatch<React.SetStateAction<number>>;
+  currentFrames: [number, number];
 }
 
 let vis: LineD3;
 
-const Line = ({ frames, stats, frame, setFrame }: Props) => {
+const Line = ({ percents, currentFrames, frame, setFrame }: Props) => {
   const ref = useRef(null);
 
   useEffect(() => {
-    vis = new LineD3(ref.current, getPercents(frames, stats.lastFrame));
+    vis = new LineD3(ref.current, percents);
   }, []);
 
   useEffect(() => {
-    console.log('updating data??');
-    vis.updateData(getPercents(frames, stats.lastFrame));
-  }, [frames, stats.lastFrame]);
+    vis.updateData(percents);
+  }, [percents, currentFrames]);
 
   useEffect(() => {
     vis.updateFrame(frame);

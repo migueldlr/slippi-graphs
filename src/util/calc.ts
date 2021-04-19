@@ -1,6 +1,6 @@
-import { FramesType } from '@slippi/slippi-js';
+import { FramesType, MetadataType } from '@slippi/slippi-js';
 import { PlayerInput } from '@slippi/slippi-js/dist/stats/inputs';
-import { Tech } from './types';
+import { Data, FrameID, InputsType, PlayerID, Tech } from './types';
 
 export const getPositions = (frames: FramesType, playerId = 0) => {
   const positions: {
@@ -16,8 +16,11 @@ export const getPositions = (frames: FramesType, playerId = 0) => {
   return positions;
 };
 
-export const getPercents = (frames: FramesType, lastFrame: number) => {
-  const playerIds = Object.entries(frames[0].players)
+export const getPercents = (
+  frames: FramesType,
+  currentFrames: [number, number]
+) => {
+  const playerIds = Object.entries(frames[currentFrames[0]].players)
     .filter(([k, v]) => v != null)
     .map(([k, v]) => +k);
 
@@ -25,7 +28,7 @@ export const getPercents = (frames: FramesType, lastFrame: number) => {
 
   playerIds.map(id => {
     const playerPercent: [number, number][] = [];
-    for (let i = 0; i < lastFrame; i++) {
+    for (let i = currentFrames[0]; i < currentFrames[1]; i++) {
       const frame = frames[i];
       const { percent } = frame.players[id].pre;
       playerPercent.push([i, percent]);
@@ -36,15 +39,44 @@ export const getPercents = (frames: FramesType, lastFrame: number) => {
   return out;
 };
 
-export const getAPM = (data: { [playerId: number]: PlayerInput[] }) => {
-  const out: Record<number, [number, number][]> = {};
+export const getAPM = (data: InputsType, currentFrames: [number, number]) => {
+  const out: Record<PlayerID, [FrameID, number][]> = {};
   for (let id in data) {
-    out[id] = data[id].map((d, i) => [
-      i,
-      d.inputCount - (i < 120 ? 0 : data[id][i - 120].inputCount),
-    ]);
+    const player = data[id];
+    out[id] = [];
+    let sum = 0;
+    for (let i = currentFrames[0]; i < currentFrames[1]; i++) {
+      const frame = player[i];
+      if (i > currentFrames[0] + 120) {
+        sum -= player[i - 120].singleFrameInput;
+      }
+      sum += frame.singleFrameInput;
+      out[id].push([i, sum]);
+    }
   }
   return out;
+};
+
+export const filterData = (data: Data, currentFrames: [number, number]) => {
+  const playerIds = Object.keys(data.metadata.players).map(id => +id);
+  const filteredFrames: FramesType = Object.fromEntries(
+    Object.entries(data.frames).filter(
+      ([frameIdx, frame]) =>
+        currentFrames[0] <= +frameIdx && +frameIdx <= currentFrames[1]
+    )
+  );
+  const filteredInputs: InputsType = {};
+  playerIds.forEach(id => {
+    filteredInputs[id] = data.inputs[id].filter(
+      (d, i) => currentFrames[0] <= i && i <= currentFrames[1]
+    );
+  });
+
+  return {
+    ...data,
+    frames: filteredFrames,
+    inputs: filteredInputs,
+  };
 };
 
 export const getTechOptions = (
@@ -62,7 +94,7 @@ export const getTechOptions = (
 
   for (let frame in frames) {
     const state = frames[frame].players[playerIndex].pre.actionStateId;
-    if (+frame <= 1) {
+    if (+frame - 1 <= 1 || !(+frame - 1 in frames)) {
       continue;
     }
 

@@ -153,20 +153,6 @@ const InputDisplay = ({ frame: initFrame }: Props) => {
     </div>
   );
 
-  const aButton = (
-    <div>
-      <Image
-        width="128px"
-        height="128px"
-        src={
-          A_MASK & buttons
-            ? '/controller/a-pressed.png'
-            : '/controller/a-filled.png'
-        }
-      />
-    </div>
-  );
-
   const buttonToMask = {
     a: A_MASK,
     b: B_MASK,
@@ -179,15 +165,30 @@ const InputDisplay = ({ frame: initFrame }: Props) => {
     Object.keys(buttonToMask).map(letter => [
       letter,
       <div>
-        <Image
-          width="128px"
-          height="128px"
-          src={
-            buttonToMask[letter] & buttons
-              ? `/controller/${letter}-pressed.png`
-              : `/controller/${letter}-filled.png`
-          }
-        />
+        <div
+          style={{
+            visibility: buttonToMask[letter] & buttons ? 'visible' : 'hidden',
+            position: 'absolute',
+          }}
+        >
+          <Image
+            width="128px"
+            height="128px"
+            src={`/controller/${letter}-pressed.png`}
+          />
+        </div>
+        <div
+          style={{
+            visibility: buttonToMask[letter] & buttons ? 'hidden' : 'visible',
+            position: 'absolute',
+          }}
+        >
+          <Image
+            width="128px"
+            height="128px"
+            src={`/controller/${letter}-filled.png`}
+          />
+        </div>
       </div>,
     ])
   );

@@ -9,32 +9,29 @@ import { useEffect, useState } from 'react';
 import Brush from '../components/Brush';
 import Line from '../components/Line';
 import Map from '../components/Map';
-import { InputsType } from '../util/types';
+import { Data, InputsType } from '../util/types';
 import LineInputs from '../components/LineInputs';
 import InputDisplay from '../components/InputDisplay';
 import PlayerInfo from '../components/PlayerInfo';
+import { filterData, getAPM, getPercents } from '../util/calc';
 
 export default function Home() {
-  const [data, setData] = useState<null | {
-    frames: FramesType;
-    stats: StatsType;
-    metadata: MetadataType;
-    settings: GameStartType;
-    inputs: InputsType;
-  }>(null);
+  const [origData, setOrigData] = useState<Data | null>(null);
 
   const [currentFrames, setCurrentFrames] = useState<[number, number]>([
     0,
     100,
   ]);
+  const data = origData == null ? null : filterData(origData, currentFrames);
 
   const [frame, setFrame] = useState<number>();
 
   useEffect(() => {
     (async () => {
       const response = await fetch('/api/game');
-      const data = await response.json();
-      setData(data);
+      const data: Data = await response.json();
+      setOrigData(data);
+      setCurrentFrames([0, data.stats.lastFrame]);
       console.log(data.stats);
       console.log(data.metadata);
       console.log(Object.keys(data.frames).length);
@@ -59,12 +56,16 @@ export default function Home() {
 
   const playerIds = Object.keys(data.metadata.players).map(id => +id);
 
+  const inputs = getAPM(origData.inputs, currentFrames);
+  const percents = getPercents(origData.frames, currentFrames);
+
   return (
     <div
       style={{
         display: `flex`,
         flexDirection: `column`,
         alignItems: `center`,
+        paddingBottom: 20,
       }}
       className="container"
     >
@@ -81,11 +82,13 @@ export default function Home() {
             frame={
               frame == null
                 ? null
-                : data.frames[frame].players[playerIds[0]].pre
+                : frame in data.frames
+                ? data.frames[frame].players[playerIds[0]].pre
+                : null
             }
           />
         </div>
-        <Map data={data} currentFrames={currentFrames} frame={frame} />
+        <Map data={origData} currentFrames={currentFrames} frame={frame} />
         <div>
           <PlayerInfo
             frames={data.frames}
@@ -98,25 +101,28 @@ export default function Home() {
             frame={
               frame == null
                 ? null
-                : data.frames[frame].players[playerIds[1]].pre
+                : frame in data.frames
+                ? data.frames[frame].players[playerIds[1]].pre
+                : null
             }
           />
         </div>
       </div>
       <br />
+      <p>{frame ?? 'no frame'}</p>
+      <p>{JSON.stringify(currentFrames)}</p>
       <div
         style={{
           width: `80%`,
         }}
       >
         <Line
-          frames={data.frames}
-          stats={data.stats}
+          percents={percents}
           frame={frame}
           setFrame={setFrame}
+          currentFrames={currentFrames}
         />
-        <LineInputs inputs={data.inputs} frame={frame} setFrame={setFrame} />
-        {/* <LineTwo data={data.inputs} /> */}
+        <LineInputs inputs={inputs} frame={frame} setFrame={setFrame} />
         <br />
         <Brush
           min={0}

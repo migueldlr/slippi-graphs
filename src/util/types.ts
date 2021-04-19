@@ -1,3 +1,9 @@
+import {
+  FramesType,
+  GameStartType,
+  MetadataType,
+  StatsType,
+} from '@slippi/slippi-js';
 import { PlayerInput } from '@slippi/slippi-js/dist/stats/inputs';
 
 export interface Position {
@@ -6,7 +12,15 @@ export interface Position {
   positionY: number;
 }
 
-export type InputsType = Record<number, PlayerInput[]>;
+export type PlayerInputWithExtra = PlayerInput & {
+  frameIndex: number;
+  singleFrameInput: number;
+};
+
+export type PlayerID = number;
+export type FrameID = number;
+
+export type InputsType = Record<PlayerID, PlayerInputWithExtra[]>;
 
 export interface Action {
   id: number;
@@ -20,4 +34,12 @@ export enum Tech {
   IN = 'IN',
   AWAY = 'AWAY',
   WALL = 'WALL',
+}
+
+export interface Data {
+  frames: FramesType;
+  stats: StatsType;
+  metadata: MetadataType;
+  settings: GameStartType;
+  inputs: InputsType;
 }

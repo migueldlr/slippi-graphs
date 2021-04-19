@@ -30,7 +30,11 @@ export default class LineD3 {
 
   update() {
     this.playerIds = Object.keys(this.data).map(x => +x);
-    const xDomain = [0, this.data[this.playerIds[0]].length];
+    const xDomain = d3.extent(
+      d3.merge<number>(
+        this.playerIds.map(id => this.data[id].map(frame => frame[0]))
+      )
+    );
     const yDomain = d3.extent(
       d3.merge<number>(
         this.playerIds.map(id => this.data[id].map(frame => frame[1]))
@@ -64,16 +68,20 @@ export default class LineD3 {
       .y(d => this.yScale(d[1]));
 
     // set up lines
-    const lines = svg.select('.lines').selectAll('.line').data(dataArr);
+    const lines = svg
+      .select('.lines')
+      .selectAll('.line')
+      .data(dataArr, d => d[0]);
 
     const linesEnter = lines
       .enter()
       .append('path')
-      .attr('class', d => `line p${d[0]}`);
-
-    linesEnter.merge(lines);
-
-    linesEnter.attr('d', d => lineInterpolate(d[1])).attr('fill', 'none');
+      .attr('class', d => `line p${d[0]}`)
+      .merge(lines)
+      .attr('d', d => {
+        return lineInterpolate(d[1]);
+      })
+      .attr('fill', 'none');
 
     // set up dots
     const dots = svg
@@ -130,10 +138,11 @@ export default class LineD3 {
     }
     markerG.style('visibility', 'visible');
     this.tooltip.style('visibility', 'visible');
+    const frameData = (id: number) => this.data[id].find(x => x[0] === frame);
 
     markerG.attr('transform', `translate(${this.xScale(frame)}, 0)`);
     this.playerIds.forEach(id => {
-      const y = this.yScale(this.data[id][frame][1]);
+      const y = this.yScale(frameData(id)[1]);
       markerG
         .select('.dots')
         .select(`.p${id}`)
@@ -147,9 +156,10 @@ export default class LineD3 {
     this.tooltip
       .select('.text')
       .text(
-        this.playerIds
-          .map(id => `Player ${id}: ${this.data[id][frame][1].toFixed(1)}%`)
-          .join('\n')
+        `Frame ${frame}:\n` +
+          this.playerIds
+            .map(id => `Player ${id}: ${frameData(id)[1].toFixed(1)}%`)
+            .join('\n')
       );
     return frame;
   }

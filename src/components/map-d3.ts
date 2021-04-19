@@ -7,7 +7,7 @@ import {
 import { PlayerInput } from '@slippi/slippi-js/dist/stats/inputs';
 import * as d3 from 'd3';
 import { getPositions } from '../util/calc';
-import { Position } from '../util/types';
+import { PlayerID, Position } from '../util/types';
 
 export default class MapD3 {
   containerEl: HTMLDivElement;
@@ -20,10 +20,15 @@ export default class MapD3 {
     inputs: Record<number, PlayerInput[]>;
   };
   currentFrames: [number, number];
+  dots: Record<
+    PlayerID,
+    d3.Selection<d3.BaseType, Position, d3.BaseType, unknown>
+  >;
   constructor(containerEl: HTMLDivElement, data) {
     this.containerEl = containerEl;
     this.container = d3.select(this.containerEl as d3.BaseType);
     this.data = data;
+    this.dots = {};
 
     const svg = this.container
       .select('svg')
@@ -61,6 +66,7 @@ export default class MapD3 {
       .attr('transform', (d, i) => {
         return `translate(${d.positionX}, ${-d.positionY})`;
       });
+    this.dots[playerId] = dots;
   };
 
   update() {
@@ -75,13 +81,11 @@ export default class MapD3 {
     const playerIds = Object.keys(this.data.metadata.players).map(id => +id);
 
     playerIds.forEach(id => {
-      this.container
-        .selectAll(`.dot.p${id}`)
-        .classed('hidden', (d: Position) => {
-          return !(
-            currentFrames[0] < d.frameIdx && d.frameIdx < currentFrames[1]
-          );
-        });
+      this.dots[id].classed('hidden', (d: Position) => {
+        return !(
+          currentFrames[0] < d.frameIdx && d.frameIdx < currentFrames[1]
+        );
+      });
     });
     this.currentFrames = currentFrames;
   }
@@ -90,8 +94,7 @@ export default class MapD3 {
     const playerIds = Object.keys(this.data.metadata.players).map(id => +id);
     if (frame == null) {
       playerIds.forEach(id => {
-        this.container
-          .selectAll(`.dot.p${id}`)
+        this.dots[id]
           .classed('highlight', false)
           .classed('antihighlight', false);
       });
@@ -100,8 +103,7 @@ export default class MapD3 {
     }
 
     playerIds.forEach(id => {
-      this.container
-        .selectAll(`.dot.p${id}`)
+      this.dots[id]
         .classed('highlight', (d: Position) => frame === d.frameIdx)
         .classed(
           'antihighlight',

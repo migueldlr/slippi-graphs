@@ -5,7 +5,7 @@ import { InputsType } from '../util/types';
 import LineD3 from './line-d3';
 
 interface Props {
-  inputs: InputsType;
+  inputs: Record<number, [number, number][]>;
   frame: number;
   setFrame: React.Dispatch<React.SetStateAction<number>>;
 }
@@ -16,12 +16,11 @@ const Line = ({ inputs, frame, setFrame }: Props) => {
   const ref = useRef(null);
 
   useEffect(() => {
-    vis = new LineD3(ref.current, getAPM(inputs));
+    vis = new LineD3(ref.current, inputs);
   }, []);
 
   useEffect(() => {
-    console.log('updating data??');
-    vis.updateData(getAPM(inputs));
+    vis.updateData(inputs);
   }, [inputs]);
 
   useEffect(() => {
