@@ -4,16 +4,14 @@ import {
   MetadataType,
   StatsType,
 } from '@slippi/slippi-js';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 
-import * as d3 from 'd3';
 import Brush from '../components/Brush';
 import Line from '../components/Line';
-import LineTwo from '../components/LineTwo';
-import { PlayerInput } from '@slippi/slippi-js/dist/stats/inputs';
 import Map from '../components/Map';
 import { InputsType } from '../util/types';
 import LineInputs from '../components/LineInputs';
+import InputDisplay from '../components/InputDisplay';
 
 export default function Home() {
   const [data, setData] = useState<null | {
@@ -58,6 +56,8 @@ export default function Home() {
     );
   }
 
+  const playerIds = Object.keys(data.metadata.players).map(id => +id);
+
   return (
     <div
       style={{
@@ -67,7 +67,19 @@ export default function Home() {
       }}
       className="container"
     >
-      <Map data={data} currentFrames={currentFrames} />
+      <div style={{ display: 'flex' }}>
+        <InputDisplay
+          frame={
+            frame == null ? null : data.frames[frame].players[playerIds[0]].pre
+          }
+        />
+        <Map data={data} currentFrames={currentFrames} />
+        <InputDisplay
+          frame={
+            frame == null ? null : data.frames[frame].players[playerIds[1]].pre
+          }
+        />
+      </div>
       <br />
       <div
         style={{

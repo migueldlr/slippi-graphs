@@ -73,3 +73,9 @@ a {
 input[type='range'] {
   width: 1500px;
 }
+
+.inputbutton {
+  position: absolute;
+  height: 128px;
+  width: 128px;
+}
