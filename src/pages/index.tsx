@@ -12,6 +12,7 @@ import Map from '../components/Map';
 import { InputsType } from '../util/types';
 import LineInputs from '../components/LineInputs';
 import InputDisplay from '../components/InputDisplay';
+import PlayerInfo from '../components/PlayerInfo';
 
 export default function Home() {
   const [data, setData] = useState<null | {
@@ -68,17 +69,39 @@ export default function Home() {
       className="container"
     >
       <div style={{ display: 'flex' }}>
-        <InputDisplay
-          frame={
-            frame == null ? null : data.frames[frame].players[playerIds[0]].pre
-          }
-        />
-        <Map data={data} currentFrames={currentFrames} />
-        <InputDisplay
-          frame={
-            frame == null ? null : data.frames[frame].players[playerIds[1]].pre
-          }
-        />
+        <div>
+          <PlayerInfo
+            frames={data.frames}
+            metadata={data.metadata}
+            playerIndex={playerIds[0]}
+            opponentIndex={playerIds[1]}
+            stats={data.stats}
+          />
+          <InputDisplay
+            frame={
+              frame == null
+                ? null
+                : data.frames[frame].players[playerIds[0]].pre
+            }
+          />
+        </div>
+        <Map data={data} currentFrames={currentFrames} frame={frame} />
+        <div>
+          <PlayerInfo
+            frames={data.frames}
+            metadata={data.metadata}
+            playerIndex={playerIds[1]}
+            opponentIndex={playerIds[0]}
+            stats={data.stats}
+          />
+          <InputDisplay
+            frame={
+              frame == null
+                ? null
+                : data.frames[frame].players[playerIds[1]].pre
+            }
+          />
+        </div>
       </div>
       <br />
       <div

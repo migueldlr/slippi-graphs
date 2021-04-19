@@ -19,6 +19,7 @@ export default class MapD3 {
     settings: GameStartType;
     inputs: Record<number, PlayerInput[]>;
   };
+  currentFrames: [number, number];
   constructor(containerEl: HTMLDivElement, data) {
     this.containerEl = containerEl;
     this.container = d3.select(this.containerEl as d3.BaseType);
@@ -74,11 +75,41 @@ export default class MapD3 {
     const playerIds = Object.keys(this.data.metadata.players).map(id => +id);
 
     playerIds.forEach(id => {
-      d3.selectAll(`.dot.p${id}`).classed('hidden', (d: Position) => {
-        return !(
-          currentFrames[0] < d.frameIdx && d.frameIdx < currentFrames[1]
-        );
+      this.container
+        .selectAll(`.dot.p${id}`)
+        .classed('hidden', (d: Position) => {
+          return !(
+            currentFrames[0] < d.frameIdx && d.frameIdx < currentFrames[1]
+          );
+        });
+    });
+    this.currentFrames = currentFrames;
+  }
+
+  updateFrame(frame: number) {
+    const playerIds = Object.keys(this.data.metadata.players).map(id => +id);
+    if (frame == null) {
+      playerIds.forEach(id => {
+        this.container
+          .selectAll(`.dot.p${id}`)
+          .classed('highlight', false)
+          .classed('antihighlight', false);
       });
+      this.updateFrames(this.currentFrames);
+      return;
+    }
+
+    playerIds.forEach(id => {
+      this.container
+        .selectAll(`.dot.p${id}`)
+        .classed('highlight', (d: Position) => frame === d.frameIdx)
+        .classed(
+          'antihighlight',
+          (d: Position) =>
+            this.currentFrames[0] < d.frameIdx &&
+            d.frameIdx < this.currentFrames[1] &&
+            frame !== d.frameIdx
+        );
     });
   }
 }

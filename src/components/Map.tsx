@@ -17,11 +17,12 @@ interface Props {
     inputs: Record<number, PlayerInput[]>;
   };
   currentFrames: [number, number];
+  frame?: number;
 }
 
 let vis: MapD3;
 
-const Map = ({ data, currentFrames }: Props) => {
+const Map = ({ data, currentFrames, frame }: Props) => {
   const ref = useRef(null);
 
   useEffect(() => {
@@ -32,6 +33,10 @@ const Map = ({ data, currentFrames }: Props) => {
     vis.updateFrames(currentFrames);
   }, [currentFrames]);
 
+  useEffect(() => {
+    vis.updateFrame(frame);
+  }, [frame]);
+
   return (
     <div ref={ref}>
       <svg width="500" height="500" style={{ border: `1px solid black` }}>
@@ -41,4 +46,4 @@ const Map = ({ data, currentFrames }: Props) => {
   );
 };
 
-export default Map;
+export default React.memo(Map);

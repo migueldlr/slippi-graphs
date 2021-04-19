@@ -7,3 +7,17 @@ export interface Position {
 }
 
 export type InputsType = Record<number, PlayerInput[]>;
+
+export interface Action {
+  id: number;
+  state: string;
+  notes?: string;
+}
+
+export enum Tech {
+  MISSED = 'MISSED',
+  IN_PLACE = 'IN_PLACE',
+  IN = 'IN',
+  AWAY = 'AWAY',
+  WALL = 'WALL',
+}

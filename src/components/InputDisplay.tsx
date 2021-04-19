@@ -2,6 +2,7 @@ import * as d3 from 'd3';
 import { PreFrameUpdateType } from '@slippi/slippi-js';
 import React, { useMemo, useRef } from 'react';
 import Image from 'next/image';
+import { ACTION_STATES } from '../util/actionStates';
 
 interface Props {
   frame: PreFrameUpdateType | null;
@@ -30,10 +31,8 @@ const InputDisplay = ({ frame: initFrame }: Props) => {
     cStickY: 0,
     physicalLTrigger: 0,
     physicalRTrigger: 0,
+    actionStateId: -1,
   };
-
-  // console.log(frame.buttons.toString(2).padStart(32, '0'));
-  // console.log(frame.physicalButtons.toString(2).padStart(32, '0'));
 
   const {
     joystickX,
@@ -43,6 +42,7 @@ const InputDisplay = ({ frame: initFrame }: Props) => {
     physicalRTrigger,
     cStickX,
     cStickY,
+    actionStateId,
   } = frame;
 
   const lButton = (
@@ -193,40 +193,51 @@ const InputDisplay = ({ frame: initFrame }: Props) => {
   );
 
   return (
-    <div
-      style={{
-        position: 'relative',
-        width: '500px',
-        height: '200px',
-        backgroundColor: 'black',
-      }}
-    >
-      <div className="inputbutton" style={{ left: 10, top: 10 }}>
-        {lButton}
-      </div>
-      <div className="inputbutton" style={{ left: 10, top: 50 }}>
-        {joystick}
-      </div>
-      <div className="inputbutton" style={{ left: 160, top: 10 }}>
-        {rButton}
-      </div>
-      <div className="inputbutton" style={{ left: 160, top: 50 }}>
-        {cstick}
-      </div>
-      <div className="inputbutton" style={{ left: 330, top: 40 }}>
-        {buttonEls.a}
-        <div className="inputbutton" style={{ top: 50, left: -50 }}>
-          {buttonEls.b}
+    <div>
+      <div
+        style={{
+          position: 'relative',
+          width: '500px',
+          height: '200px',
+          backgroundColor: 'black',
+        }}
+      >
+        <div className="inputbutton" style={{ left: 10, top: 10 }}>
+          {lButton}
         </div>
-        <div className="inputbutton" style={{ top: -63, left: -13 }}>
-          {buttonEls.y}
+        <div className="inputbutton" style={{ left: 10, top: 50 }}>
+          {joystick}
         </div>
-        <div className="inputbutton" style={{ top: -19, left: 61 }}>
-          {buttonEls.x}
+        <div className="inputbutton" style={{ left: 160, top: 10 }}>
+          {rButton}
         </div>
-        <div className="inputbutton" style={{ top: -74, left: 50 }}>
-          {buttonEls.z}
+        <div className="inputbutton" style={{ left: 160, top: 50 }}>
+          {cstick}
         </div>
+        <div className="inputbutton" style={{ left: 330, top: 40 }}>
+          {buttonEls.a}
+          <div className="inputbutton" style={{ top: 50, left: -50 }}>
+            {buttonEls.b}
+          </div>
+          <div className="inputbutton" style={{ top: -63, left: -13 }}>
+            {buttonEls.y}
+          </div>
+          <div className="inputbutton" style={{ top: -19, left: 61 }}>
+            {buttonEls.x}
+          </div>
+          <div className="inputbutton" style={{ top: -74, left: 50 }}>
+            {buttonEls.z}
+          </div>
+        </div>
+      </div>
+      <div>
+        <p>{actionStateId !== -1 ? actionStateId : null}</p>
+        <p>
+          {ACTION_STATES[actionStateId] == null
+            ? null
+            : ACTION_STATES[actionStateId].notes ??
+              ACTION_STATES[actionStateId].id}
+        </p>
       </div>
     </div>
   );
