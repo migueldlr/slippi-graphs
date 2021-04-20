@@ -33,7 +33,7 @@ const Line = ({ percents, currentFrames, frame, setFrame }: Props) => {
       id="scatter"
       style={{
         width: `100%`,
-        height: `200px`,
+        height: `100px`,
         overflow: `visible`,
       }}
       onMouseMove={e => {

@@ -123,10 +123,11 @@ export default function Home() {
           />
         </div>
       </div>
-      <br />
-      <p>{frame ?? 'no frame'}</p>
-      <p>{frame != null ? frameCountToGameTime(frame) : 0}</p>
-      <p>{JSON.stringify(currentFrames)}</p>
+      <p>
+        {frame ?? 'no frame'} -{' '}
+        {frame != null ? frameCountToGameTime(frame) : 0} -{' '}
+        {JSON.stringify(currentFrames)}
+      </p>
       <div
         style={{
           width: `80%`,
