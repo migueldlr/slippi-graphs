@@ -103,7 +103,12 @@ export default function Home() {
             }
           />
         </div>
-        <Map data={origData} currentFrames={currentFrames} frame={frame} />
+        <Map
+          data={origData}
+          currentFrames={currentFrames}
+          frame={frame}
+          setFrame={setFrame}
+        />
         <div>
           <PlayerInfo
             frames={data.frames}

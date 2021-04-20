@@ -31,6 +31,14 @@ export default class MapD3 {
   fakeContainerEl: HTMLElement;
   fakeContainer: d3.Selection<d3.BaseType, unknown, null, undefined>;
   frame: number;
+  fakeCtx: CanvasRenderingContext2D;
+  colors: Set<string>;
+  colorToNode: Record<
+    string,
+    d3.Selection<d3.BaseType, unknown, null, undefined>
+  >;
+  size: number;
+  canvas: HTMLCanvasElement;
 
   constructor(containerEl: HTMLDivElement, data) {
     this.fakeContainerEl = document.createElement('custom');
@@ -40,22 +48,31 @@ export default class MapD3 {
     this.data = data;
     this.dots = {};
 
-    const canvas: HTMLCanvasElement = this.container
-      .select('canvas')
+    this.canvas = this.container
+      .select('canvas#real')
       .node() as HTMLCanvasElement;
 
-    this.ctx = canvas.getContext('2d');
-    const size = 500;
+    const fakeCanvas: HTMLCanvasElement = this.container
+      .select('canvas#fake')
+      .node() as HTMLCanvasElement;
 
-    canvas.style.width = `${size}px`;
-    canvas.style.height = `${size}px`;
+    this.fakeCtx = fakeCanvas.getContext('2d');
+    this.ctx = this.canvas.getContext('2d');
 
-    const scale = window.devicePixelRatio; // Change to 1 on retina screens to see blurry canvas.
-    canvas.width = Math.floor(size * scale);
-    canvas.height = Math.floor(size * scale);
+    this.size = 500;
+    const scale = window.devicePixelRatio;
 
-    // Normalize coordinate system to use css pixels.
+    this.canvas.style.width = `${this.size}px`;
+    this.canvas.style.height = `${this.size}px`;
+    this.canvas.width = Math.floor(this.size * scale);
+    this.canvas.height = Math.floor(this.size * scale);
     this.ctx.scale(scale, scale);
+
+    fakeCanvas.style.width = `${this.size}px`;
+    fakeCanvas.style.height = `${this.size}px`;
+    fakeCanvas.width = Math.floor(this.size * scale);
+    fakeCanvas.height = Math.floor(this.size * scale);
+    this.fakeCtx.scale(scale, scale);
 
     this.playerIds = Object.keys(this.data.metadata.players).map(id => +id);
 
@@ -64,44 +81,40 @@ export default class MapD3 {
       this.positions[id] = getPositions(this.data.frames, id);
     });
 
+    this.colorToNode = {};
+    this.colors = new Set();
+
     this.update();
   }
 
-  clear() {
-    this.ctx.clearRect(
-      0,
-      0,
-      this.containerEl.clientWidth,
-      this.containerEl.clientHeight
-    );
+  clear(preserveFake: boolean) {
+    this.ctx.clearRect(0, 0, this.size, this.size);
+    if (!preserveFake) {
+      this.fakeCtx.clearRect(0, 0, this.size, this.size);
+      this.colors.clear();
+      this.colorToNode = {};
+    }
   }
 
-  updateDots = (positions: Position[], playerId: number) => {
-    this.clear();
-    const dots = this.fakeContainer
-      .selectAll(`.dot.p${playerId}`)
-      .data(positions, (d: Position) => d.frameIdx);
-
-    const dotsEnter: d3.Selection<
-      d3.BaseType,
-      Position,
-      d3.BaseType,
-      unknown
-    > = dots.enter().append('circle').attr('class', `dot p${playerId}`);
-
-    dotsEnter
-      .merge(dots)
-      .attr('playerid', playerId)
-      .attr('frameIdx', d => d.frameIdx)
-      .attr('x', d => d.positionX)
-      .attr('y', d => d.positionY);
-  };
-
   update() {
-    const playerIds = Object.keys(this.data.metadata.players).map(id => +id);
+    this.playerIds.forEach(id => {
+      const dots = this.fakeContainer
+        .selectAll(`.dot.p${id}`)
+        .data(this.positions[id], (d: Position) => d.frameIdx);
 
-    playerIds.forEach(id => {
-      this.updateDots(this.positions[id], id);
+      const dotsEnter: d3.Selection<
+        d3.BaseType,
+        Position,
+        d3.BaseType,
+        unknown
+      > = dots.enter().append('circle').attr('class', `dot p${id}`);
+
+      dotsEnter
+        .merge(dots)
+        .attr('playerid', id)
+        .attr('frameIdx', d => d.frameIdx)
+        .attr('x', d => d.positionX)
+        .attr('y', d => d.positionY);
     });
   }
 
@@ -110,27 +123,50 @@ export default class MapD3 {
     this.redraw();
   }
 
+  genColor() {
+    let color: string;
+    do {
+      color = '#' + Math.floor(Math.random() * 16777215).toString(16);
+    } while (this.colors.has(color));
+
+    this.colors.add(color);
+    return color;
+  }
+
   drawCircle(
-    x: number,
-    y: number,
-    id: number,
-    config?: Parameters<typeof getColor>[1]
+    node: d3.Selection<d3.BaseType, unknown, null, undefined>,
+    fake: boolean
   ) {
-    this.ctx.fillStyle = getColor(id, config);
-    this.ctx.beginPath();
-    this.ctx.arc(
-      x + this.containerEl.clientWidth / 2,
-      -y + this.containerEl.clientHeight / 2,
+    const ctx = fake ? this.fakeCtx : this.ctx;
+    if (fake) {
+      const color = this.genColor();
+      ctx.fillStyle = color;
+      this.colorToNode[color] = node;
+    } else {
+      ctx.fillStyle = getColor(
+        +node.attr('playerid'),
+        this.frame == null
+          ? {}
+          : {
+              highlight: +node.attr('frameIdx') === this.frame,
+              antihighlight: +node.attr('frameIdx') !== this.frame,
+            }
+      );
+    }
+    ctx.beginPath();
+    ctx.arc(
+      +node.attr('x') + this.size / 2,
+      -+node.attr('y') + this.size / 2,
       4,
       0,
       2 * Math.PI
     );
-    this.ctx.fill();
-    this.ctx.closePath();
+    ctx.fill();
+    ctx.closePath();
   }
 
-  redraw() {
-    this.clear();
+  redraw(preserveFake?: boolean) {
+    this.clear(preserveFake);
     this.fakeContainer.selectAll(`.dot`).each((d, i, nodes) => {
       const node = d3.select(nodes[i]);
 
@@ -138,23 +174,36 @@ export default class MapD3 {
         this.currentFrames[0] < +node.attr('frameIdx') &&
         +node.attr('frameIdx') < this.currentFrames[1]
       ) {
-        this.drawCircle(
-          +node.attr('x'),
-          +node.attr('y'),
-          +node.attr('playerid'),
-          this.frame == null
-            ? {}
-            : {
-                highlight: +node.attr('frameIdx') === this.frame,
-                antihighlight: +node.attr('frameIdx') !== this.frame,
-              }
-        );
+        if (!preserveFake) this.drawCircle(node, true);
+        this.drawCircle(node, false);
       }
     });
   }
 
+  mouseMove(e: React.MouseEvent<HTMLCanvasElement, MouseEvent>) {
+    const x = e.pageX - this.canvas.offsetLeft;
+    const y = e.pageY - this.canvas.offsetTop;
+    const color = this.fakeCtx.getImageData(
+      x * window.devicePixelRatio,
+      y * window.devicePixelRatio,
+      1,
+      1
+    ).data;
+    const hex =
+      '#' +
+      ((1 << 24) + (color[0] << 16) + (color[1] << 8) + color[2])
+        .toString(16)
+        .slice(1);
+
+    const node = this.colorToNode[hex];
+    if (node != null) {
+      return +node.attr('frameIdx');
+    }
+    return null;
+  }
+
   updateFrame(frame: number) {
     this.frame = frame;
-    this.redraw();
+    this.redraw(true);
   }
 }

@@ -18,11 +18,12 @@ interface Props {
   };
   currentFrames: [number, number];
   frame?: number;
+  setFrame: React.Dispatch<React.SetStateAction<number>>;
 }
 
 let vis: MapD3;
 
-const Map = ({ data, currentFrames, frame }: Props) => {
+const Map = ({ data, currentFrames, frame, setFrame }: Props) => {
   const ref = useRef(null);
 
   useEffect(() => {
@@ -42,8 +43,19 @@ const Map = ({ data, currentFrames, frame }: Props) => {
       <canvas
         width="500"
         height="500"
+        id="real"
         style={{ border: `1px solid black` }}
+        onMouseMove={e => {
+          const newFrame = vis.mouseMove(e);
+          setFrame(newFrame);
+        }}
       ></canvas>
+      <canvas
+        width="500"
+        height="500"
+        id="fake"
+        style={{ display: 'none', border: `1px solid black` }}
+      />
     </div>
   );
 };
