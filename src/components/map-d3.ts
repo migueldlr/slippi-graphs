@@ -76,28 +76,6 @@ export default class MapD3 {
     );
   }
 
-  // update() {
-  //   this.clear();
-  //   this.playerIds.forEach(id => {
-  //     const positions = this.positions[id];
-  //     this.ctx.fillStyle = getColor(id);
-  //     positions.forEach(pos => {
-  //       this.ctx.beginPath();
-  //       //this.ctx.arc(x-center, y-center, radius, startAngle, endAngle, counterclockwise)
-  //       //A circle would thus look like:
-  //       this.ctx.arc(
-  //         pos.positionX + this.containerEl.clientWidth / 2,
-  //         -pos.positionY + this.containerEl.clientHeight / 2,
-  //         4,
-  //         0,
-  //         2 * Math.PI
-  //       );
-  //       this.ctx.fill();
-  //     });
-  //     this.ctx.closePath();
-  //   });
-  // }
-
   updateDots = (positions: Position[], playerId: number) => {
     this.clear();
     const dots = this.fakeContainer
@@ -150,40 +128,6 @@ export default class MapD3 {
     this.ctx.fill();
     this.ctx.closePath();
   }
-
-  // updateFrames(currentFrames: [number, number]) {
-  //   this.clear();
-  //   this.currentFrames = currentFrames;
-  //   this.playerIds.forEach(id => {
-  //     const positions = this.positions[id];
-  //     positions.forEach(pos => {
-  //       this.ctx.fillStyle = getColor(id);
-  //       if (
-  //         !(
-  //           this.currentFrames[0] < pos.frameIdx &&
-  //           pos.frameIdx < this.currentFrames[1]
-  //         )
-  //       ) {
-  //         return;
-  //       }
-  //       this.ctx.beginPath();
-  //       this.ctx.arc(
-  //         pos.positionX + this.containerEl.clientWidth / 2,
-  //         -pos.positionY + this.containerEl.clientHeight / 2,
-  //         4,
-  //         0,
-  //         2 * Math.PI
-  //       );
-  //       this.ctx.fill();
-  //     });
-  //     this.ctx.closePath();
-  //   });
-  // }
-
-  // updateFrame(frame: number) {
-  //   if (frame == null) {
-  //   }
-  // }
 
   redraw() {
     this.clear();
