@@ -24,6 +24,7 @@ export default class MapD3 {
     PlayerID,
     d3.Selection<d3.BaseType, Position, d3.BaseType, unknown>
   >;
+  positions: Record<number, Position[]>;
   constructor(containerEl: HTMLDivElement, data) {
     this.containerEl = containerEl;
     this.container = d3.select(this.containerEl as d3.BaseType);
@@ -43,6 +44,13 @@ export default class MapD3 {
         'transform',
         `translate(${+svg.attr('width') / 2}, ${+svg.attr('height') / 2})`
       );
+
+    const playerIds = Object.keys(this.data.metadata.players).map(id => +id);
+
+    this.positions = {};
+    playerIds.forEach(id => {
+      this.positions[id] = getPositions(this.data.frames, id);
+    });
 
     this.update();
   }
@@ -72,7 +80,7 @@ export default class MapD3 {
     const playerIds = Object.keys(this.data.metadata.players).map(id => +id);
 
     playerIds.forEach(id => {
-      this.updateDots(getPositions(this.data.frames, id), id);
+      this.updateDots(this.positions[id], id);
     });
   }
 

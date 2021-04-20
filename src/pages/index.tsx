@@ -13,7 +13,12 @@ import { Data, InputsType } from '../util/types';
 import LineInputs from '../components/LineInputs';
 import InputDisplay from '../components/InputDisplay';
 import PlayerInfo from '../components/PlayerInfo';
-import { filterData, getAPM, getPercents } from '../util/calc';
+import {
+  filterData,
+  frameCountToGameTime,
+  getAPM,
+  getPercents,
+} from '../util/calc';
 
 export default function Home() {
   const [origData, setOrigData] = useState<Data | null>(null);
@@ -110,6 +115,7 @@ export default function Home() {
       </div>
       <br />
       <p>{frame ?? 'no frame'}</p>
+      <p>{frame != null ? frameCountToGameTime(frame) : 0}</p>
       <p>{JSON.stringify(currentFrames)}</p>
       <div
         style={{

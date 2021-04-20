@@ -149,7 +149,7 @@ const frameCountToSeconds = (frame: number) => {
     .padStart(2, '0')}`;
 };
 
-const frameCountToGameTime = (frame: number) => {
+export const frameCountToGameTime = (frame: number) => {
   const seconds = 8 * 60 - frame / 60;
   return `${Math.floor(seconds / 60)}:${(Math.floor(seconds) % 60)
     .toString()
