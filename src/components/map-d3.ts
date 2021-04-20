@@ -66,7 +66,6 @@ export default class MapD3 {
       .attr('transform', (d, i) => {
         return `translate(${d.positionX}, ${-d.positionY})`;
       });
-    this.dots[playerId] = dots;
   };
 
   update() {
@@ -81,11 +80,14 @@ export default class MapD3 {
     const playerIds = Object.keys(this.data.metadata.players).map(id => +id);
 
     playerIds.forEach(id => {
-      this.dots[id].classed('hidden', (d: Position) => {
-        return !(
-          currentFrames[0] < d.frameIdx && d.frameIdx < currentFrames[1]
-        );
-      });
+      this.container
+        .select('.center')
+        .selectAll(`.dot.p${id}`)
+        .classed('hidden', (d: Position) => {
+          return !(
+            currentFrames[0] < d.frameIdx && d.frameIdx < currentFrames[1]
+          );
+        });
     });
     this.currentFrames = currentFrames;
   }
@@ -94,7 +96,9 @@ export default class MapD3 {
     const playerIds = Object.keys(this.data.metadata.players).map(id => +id);
     if (frame == null) {
       playerIds.forEach(id => {
-        this.dots[id]
+        this.container
+          .select('.center')
+          .selectAll(`.dot.p${id}`)
           .classed('highlight', false)
           .classed('antihighlight', false);
       });
@@ -103,7 +107,9 @@ export default class MapD3 {
     }
 
     playerIds.forEach(id => {
-      this.dots[id]
+      this.container
+        .select('.center')
+        .selectAll(`.dot.p${id}`)
         .classed('highlight', (d: Position) => frame === d.frameIdx)
         .classed(
           'antihighlight',
