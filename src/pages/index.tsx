@@ -133,14 +133,6 @@ export default function Home() {
           width: `80%`,
         }}
       >
-        <Line
-          percents={percents}
-          frame={frame}
-          setFrame={setFrame}
-          currentFrames={currentFrames}
-        />
-        <LineInputs inputs={inputs} frame={frame} setFrame={setFrame} />
-        <br />
         <Brush
           min={0}
           max={data.stats.lastFrame}
@@ -156,6 +148,13 @@ export default function Home() {
             ];
           })}
         />
+        <Line
+          percents={percents}
+          frame={frame}
+          setFrame={setFrame}
+          currentFrames={currentFrames}
+        />
+        <LineInputs inputs={inputs} frame={frame} setFrame={setFrame} />
       </div>
     </div>
   );

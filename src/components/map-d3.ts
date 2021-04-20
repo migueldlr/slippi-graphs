@@ -7,6 +7,7 @@ import {
 import { PlayerInput } from '@slippi/slippi-js/dist/stats/inputs';
 import * as d3 from 'd3';
 import { getPositions } from '../util/calc';
+import { getColor } from '../util/colors';
 import { PlayerID, Position } from '../util/types';
 
 export default class MapD3 {
@@ -25,39 +26,81 @@ export default class MapD3 {
     d3.Selection<d3.BaseType, Position, d3.BaseType, unknown>
   >;
   positions: Record<number, Position[]>;
+  ctx: CanvasRenderingContext2D;
+  playerIds: number[];
+  fakeContainerEl: HTMLElement;
+  fakeContainer: d3.Selection<d3.BaseType, unknown, null, undefined>;
+  frame: number;
+
   constructor(containerEl: HTMLDivElement, data) {
+    this.fakeContainerEl = document.createElement('custom');
+    this.fakeContainer = d3.select(this.fakeContainerEl as d3.BaseType);
     this.containerEl = containerEl;
     this.container = d3.select(this.containerEl as d3.BaseType);
     this.data = data;
     this.dots = {};
 
-    const svg = this.container
-      .select('svg')
-      .attr('width', 500)
-      .attr('height', 500);
+    const canvas: HTMLCanvasElement = this.container
+      .select('canvas')
+      .node() as HTMLCanvasElement;
 
-    console.log(svg);
-    this.container
-      .select('svg')
-      .select('.center')
-      .attr(
-        'transform',
-        `translate(${+svg.attr('width') / 2}, ${+svg.attr('height') / 2})`
-      );
+    this.ctx = canvas.getContext('2d');
+    const size = 500;
 
-    const playerIds = Object.keys(this.data.metadata.players).map(id => +id);
+    canvas.style.width = `${size}px`;
+    canvas.style.height = `${size}px`;
+
+    const scale = window.devicePixelRatio; // Change to 1 on retina screens to see blurry canvas.
+    canvas.width = Math.floor(size * scale);
+    canvas.height = Math.floor(size * scale);
+
+    // Normalize coordinate system to use css pixels.
+    this.ctx.scale(scale, scale);
+
+    this.playerIds = Object.keys(this.data.metadata.players).map(id => +id);
 
     this.positions = {};
-    playerIds.forEach(id => {
+    this.playerIds.forEach(id => {
       this.positions[id] = getPositions(this.data.frames, id);
     });
 
     this.update();
   }
 
+  clear() {
+    this.ctx.clearRect(
+      0,
+      0,
+      this.containerEl.clientWidth,
+      this.containerEl.clientHeight
+    );
+  }
+
+  // update() {
+  //   this.clear();
+  //   this.playerIds.forEach(id => {
+  //     const positions = this.positions[id];
+  //     this.ctx.fillStyle = getColor(id);
+  //     positions.forEach(pos => {
+  //       this.ctx.beginPath();
+  //       //this.ctx.arc(x-center, y-center, radius, startAngle, endAngle, counterclockwise)
+  //       //A circle would thus look like:
+  //       this.ctx.arc(
+  //         pos.positionX + this.containerEl.clientWidth / 2,
+  //         -pos.positionY + this.containerEl.clientHeight / 2,
+  //         4,
+  //         0,
+  //         2 * Math.PI
+  //       );
+  //       this.ctx.fill();
+  //     });
+  //     this.ctx.closePath();
+  //   });
+  // }
+
   updateDots = (positions: Position[], playerId: number) => {
-    const center = this.container.select('.center');
-    const dots = center
+    this.clear();
+    const dots = this.fakeContainer
       .selectAll(`.dot.p${playerId}`)
       .data(positions, (d: Position) => d.frameIdx);
 
@@ -70,10 +113,10 @@ export default class MapD3 {
 
     dotsEnter
       .merge(dots)
-      .attr('r', '4')
-      .attr('transform', (d, i) => {
-        return `translate(${d.positionX}, ${-d.positionY})`;
-      });
+      .attr('playerid', playerId)
+      .attr('frameIdx', d => d.frameIdx)
+      .attr('x', d => d.positionX)
+      .attr('y', d => d.positionY);
   };
 
   update() {
@@ -85,47 +128,89 @@ export default class MapD3 {
   }
 
   updateFrames(currentFrames: [number, number]) {
-    const playerIds = Object.keys(this.data.metadata.players).map(id => +id);
-
-    playerIds.forEach(id => {
-      this.container
-        .select('.center')
-        .selectAll(`.dot.p${id}`)
-        .classed('hidden', (d: Position) => {
-          return !(
-            currentFrames[0] < d.frameIdx && d.frameIdx < currentFrames[1]
-          );
-        });
-    });
     this.currentFrames = currentFrames;
+    this.redraw();
+  }
+
+  drawCircle(
+    x: number,
+    y: number,
+    id: number,
+    config?: Parameters<typeof getColor>[1]
+  ) {
+    this.ctx.fillStyle = getColor(id, config);
+    this.ctx.beginPath();
+    this.ctx.arc(
+      x + this.containerEl.clientWidth / 2,
+      -y + this.containerEl.clientHeight / 2,
+      4,
+      0,
+      2 * Math.PI
+    );
+    this.ctx.fill();
+    this.ctx.closePath();
+  }
+
+  // updateFrames(currentFrames: [number, number]) {
+  //   this.clear();
+  //   this.currentFrames = currentFrames;
+  //   this.playerIds.forEach(id => {
+  //     const positions = this.positions[id];
+  //     positions.forEach(pos => {
+  //       this.ctx.fillStyle = getColor(id);
+  //       if (
+  //         !(
+  //           this.currentFrames[0] < pos.frameIdx &&
+  //           pos.frameIdx < this.currentFrames[1]
+  //         )
+  //       ) {
+  //         return;
+  //       }
+  //       this.ctx.beginPath();
+  //       this.ctx.arc(
+  //         pos.positionX + this.containerEl.clientWidth / 2,
+  //         -pos.positionY + this.containerEl.clientHeight / 2,
+  //         4,
+  //         0,
+  //         2 * Math.PI
+  //       );
+  //       this.ctx.fill();
+  //     });
+  //     this.ctx.closePath();
+  //   });
+  // }
+
+  // updateFrame(frame: number) {
+  //   if (frame == null) {
+  //   }
+  // }
+
+  redraw() {
+    this.clear();
+    this.fakeContainer.selectAll(`.dot`).each((d, i, nodes) => {
+      const node = d3.select(nodes[i]);
+
+      if (
+        this.currentFrames[0] < +node.attr('frameIdx') &&
+        +node.attr('frameIdx') < this.currentFrames[1]
+      ) {
+        this.drawCircle(
+          +node.attr('x'),
+          +node.attr('y'),
+          +node.attr('playerid'),
+          this.frame == null
+            ? {}
+            : {
+                highlight: +node.attr('frameIdx') === this.frame,
+                antihighlight: +node.attr('frameIdx') !== this.frame,
+              }
+        );
+      }
+    });
   }
 
   updateFrame(frame: number) {
-    const playerIds = Object.keys(this.data.metadata.players).map(id => +id);
-    if (frame == null) {
-      playerIds.forEach(id => {
-        this.container
-          .select('.center')
-          .selectAll(`.dot.p${id}`)
-          .classed('highlight', false)
-          .classed('antihighlight', false);
-      });
-      this.updateFrames(this.currentFrames);
-      return;
-    }
-
-    playerIds.forEach(id => {
-      this.container
-        .select('.center')
-        .selectAll(`.dot.p${id}`)
-        .classed('highlight', (d: Position) => frame === d.frameIdx)
-        .classed(
-          'antihighlight',
-          (d: Position) =>
-            this.currentFrames[0] < d.frameIdx &&
-            d.frameIdx < this.currentFrames[1] &&
-            frame !== d.frameIdx
-        );
-    });
+    this.frame = frame;
+    this.redraw();
   }
 }
