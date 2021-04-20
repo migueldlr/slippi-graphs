@@ -22,6 +22,8 @@ export type FrameID = number;
 
 export type InputsType = Record<PlayerID, PlayerInputWithExtra[]>;
 
+export type FlatData = Record<number, [number, number][]>;
+
 export interface Action {
   id: number;
   state: string;

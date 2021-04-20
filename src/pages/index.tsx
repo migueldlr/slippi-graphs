@@ -4,12 +4,12 @@ import {
   MetadataType,
   StatsType,
 } from '@slippi/slippi-js';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
 import Brush from '../components/Brush';
 import Line from '../components/Line';
 import Map from '../components/Map';
-import { Data, InputsType } from '../util/types';
+import { Data, FlatData, InputsType } from '../util/types';
 import LineInputs from '../components/LineInputs';
 import InputDisplay from '../components/InputDisplay';
 import PlayerInfo from '../components/PlayerInfo';
@@ -27,7 +27,10 @@ export default function Home() {
     0,
     100,
   ]);
-  const data = origData == null ? null : filterData(origData, currentFrames);
+  const data = useMemo(
+    () => (origData == null ? null : filterData(origData, currentFrames)),
+    [origData, currentFrames]
+  );
 
   const [frame, setFrame] = useState<number>();
 
@@ -43,6 +46,16 @@ export default function Home() {
       console.log(data.inputs);
     })();
   }, []);
+
+  const inputs: FlatData | null = useMemo(
+    () => (origData == null ? null : getAPM(origData.inputs, currentFrames)),
+    [origData, currentFrames]
+  );
+  const percents: FlatData | null = useMemo(
+    () =>
+      origData == null ? null : getPercents(origData.frames, currentFrames),
+    [origData, currentFrames]
+  );
 
   if (data == null) {
     return (
@@ -60,9 +73,6 @@ export default function Home() {
   }
 
   const playerIds = Object.keys(data.metadata.players).map(id => +id);
-
-  const inputs = getAPM(origData.inputs, currentFrames);
-  const percents = getPercents(origData.frames, currentFrames);
 
   return (
     <div

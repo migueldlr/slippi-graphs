@@ -45,13 +45,19 @@ export const getAPM = (data: InputsType, currentFrames: [number, number]) => {
     const player = data[id];
     out[id] = [];
     let sum = 0;
-    for (let i = currentFrames[0]; i < currentFrames[1]; i++) {
+    for (
+      let i = Math.max(currentFrames[0] - 120, 0);
+      i < currentFrames[1];
+      i++
+    ) {
       const frame = player[i];
-      if (i > currentFrames[0] + 120) {
+      if (i > currentFrames[0] && i > 120) {
         sum -= player[i - 120].singleFrameInput;
       }
       sum += frame.singleFrameInput;
-      out[id].push([i, sum]);
+      if (i >= currentFrames[0]) {
+        out[id].push([i, sum]);
+      }
     }
   }
   return out;
