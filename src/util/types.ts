@@ -31,11 +31,11 @@ export interface Action {
 }
 
 export enum Tech {
-  MISSED = 'MISSED',
-  IN_PLACE = 'IN_PLACE',
-  IN = 'IN',
-  AWAY = 'AWAY',
-  WALL = 'WALL',
+  MISSED,
+  IN_PLACE,
+  IN,
+  AWAY,
+  WALL,
 }
 
 export interface Data {

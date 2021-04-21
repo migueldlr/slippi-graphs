@@ -1,10 +1,10 @@
 import React, { useEffect, useRef } from 'react';
-import { ACTION_STATES } from '../util/actionStates';
 import BarD3 from './bar-d3';
 
 interface Props {
   data: [number, number][];
   playerId: number;
+  tooltipText: (d: [number, number]) => string;
 }
 
 const Bar = (props: Props) => {
@@ -16,24 +16,13 @@ const Bar = (props: Props) => {
       ref.current,
       props.data,
       props.playerId,
-      tooltipText
+      props.tooltipText
     );
   }, []);
 
   useEffect(() => {
     vis.current.updateData(props.data);
   }, [props.data]);
-
-  const tooltipText = (d: [number, number]) => {
-    const action = ACTION_STATES[d[0]];
-    const state =
-      action == null
-        ? 'Missing State'
-        : action.notes.length > 0
-        ? action.notes
-        : action.state;
-    return `${state}: ${d[1]}`;
-  };
 
   return (
     <div
