@@ -133,14 +133,21 @@ export const getTechOptions = (
   return out;
 };
 
-export function countStates(frames: FramesType, playerId: number) {
+export function countStates(
+  frames: FramesType,
+  playerId: number
+): [number, number][] {
   const stateCounts: Record<number, number> = {};
   for (let frameId in frames) {
     const frame = frames[frameId].players[playerId].pre;
     stateCounts[frame.actionStateId] =
       (stateCounts[frame.actionStateId] ?? 0) + 1;
   }
-  return stateCounts;
+  const out: [number, number][] = Object.entries(stateCounts).map(x => [
+    +x[0],
+    x[1],
+  ]);
+  return out.sort((a, b) => b[1] - a[1]);
 }
 
 const frameCountToSeconds = (frame: number) => {

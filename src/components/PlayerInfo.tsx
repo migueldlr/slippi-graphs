@@ -2,6 +2,7 @@ import { FramesType, MetadataType, StatsType } from '@slippi/slippi-js';
 import React from 'react';
 import { countStates, getTechOptions } from '../util/calc';
 import { CHARACTER_IDS } from '../util/ids';
+import Bar from './Bar';
 
 interface Props {
   frames: FramesType;
@@ -27,7 +28,16 @@ const PlayerInfo = ({
     <div style={{ width: '300px' }}>
       <p>{CHARACTER_IDS[Object.keys(chars)[0]]}</p>
       <p>{JSON.stringify(techs)}</p>
-      <p style={{ wordBreak: 'break-all' }}>{JSON.stringify(states)}</p>
+      <p
+        style={{
+          wordBreak: 'break-all',
+          height: '100px',
+          overflow: 'hidden',
+        }}
+      >
+        {JSON.stringify(states)}
+      </p>
+      <Bar data={states} playerId={playerIndex} />
     </div>
   );
 };

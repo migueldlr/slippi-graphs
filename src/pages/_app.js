@@ -1,4 +1,4 @@
-import '../util/wdyr';
+// import '../util/wdyr';
 import '../styles/globals.css';
 
 function MyApp({ Component, pageProps }) {
