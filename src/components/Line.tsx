@@ -1,30 +1,26 @@
-import { FramesType, StatsType } from '@slippi/slippi-js';
-import React, { memo, useEffect, useRef, useState } from 'react';
-import { getPercents } from '../util/calc';
+import React, { useEffect, useRef } from 'react';
 import LineD3 from './line-d3';
 
 interface Props {
-  percents: Record<number, [number, number][]>;
+  data: Record<number, [number, number][]>;
   frame: number;
   setFrame: React.Dispatch<React.SetStateAction<number>>;
-  currentFrames: [number, number];
 }
 
-let vis: LineD3;
-
-const Line = ({ percents, currentFrames, frame, setFrame }: Props) => {
+const Line = ({ data, frame, setFrame }: Props) => {
   const ref = useRef(null);
+  const vis = useRef<LineD3>(null);
 
   useEffect(() => {
-    vis = new LineD3(ref.current, percents);
+    vis.current = new LineD3(ref.current, data);
   }, []);
 
   useEffect(() => {
-    vis.updateData(percents);
-  }, [percents, currentFrames]);
+    vis.current.updateData(data);
+  }, [data]);
 
   useEffect(() => {
-    vis.updateFrame(frame);
+    vis.current.updateFrame(frame);
   }, [frame]);
 
   return (
@@ -37,7 +33,7 @@ const Line = ({ percents, currentFrames, frame, setFrame }: Props) => {
         overflow: `visible`,
       }}
       onMouseMove={e => {
-        const newFrame = vis.onMouseMove(e);
+        const newFrame = vis.current.onMouseMove(e);
         setFrame(newFrame);
       }}
       onMouseLeave={e => {

@@ -1,16 +1,9 @@
-import {
-  FramesType,
-  GameStartType,
-  MetadataType,
-  StatsType,
-} from '@slippi/slippi-js';
 import { useEffect, useMemo, useState } from 'react';
 
 import Brush from '../components/Brush';
 import Line from '../components/Line';
 import Map from '../components/Map';
-import { Data, FlatData, InputsType } from '../util/types';
-import LineInputs from '../components/LineInputs';
+import { Data, FlatData } from '../util/types';
 import InputDisplay from '../components/InputDisplay';
 import PlayerInfo from '../components/PlayerInfo';
 import {
@@ -19,7 +12,6 @@ import {
   getAPM,
   getPercents,
 } from '../util/calc';
-import BrushOverlay from '../components/BrushOverlay';
 
 export default function Home() {
   const [origData, setOrigData] = useState<Data | null>(null);
@@ -162,13 +154,8 @@ export default function Home() {
             frame={frame}
           />
         </div>
-        <Line
-          percents={percents}
-          frame={frame}
-          setFrame={setFrame}
-          currentFrames={currentFrames}
-        />
-        <LineInputs inputs={inputs} frame={frame} setFrame={setFrame} />
+        <Line data={percents} frame={frame} setFrame={setFrame} />
+        <Line data={inputs} frame={frame} setFrame={setFrame} />
       </div>
     </div>
   );
