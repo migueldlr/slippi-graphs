@@ -24,12 +24,10 @@ import BrushOverlay from '../components/BrushOverlay';
 export default function Home() {
   const [origData, setOrigData] = useState<Data | null>(null);
 
-  const [currentFrames, setCurrentFrames] = useState<[number, number]>([
-    0,
-    100,
-  ]);
+  const [currentFrames, setCurrentFrames] = useState<[number, number]>(null);
+  const canCalc = origData != null && currentFrames != null;
   const data = useMemo(
-    () => (origData == null ? null : filterData(origData, currentFrames)),
+    () => (canCalc ? filterData(origData, currentFrames) : null),
     [origData, currentFrames]
   );
 
@@ -49,12 +47,11 @@ export default function Home() {
   }, []);
 
   const inputs: FlatData | null = useMemo(
-    () => (origData == null ? null : getAPM(origData.inputs, currentFrames)),
+    () => (canCalc ? getAPM(origData.inputs, currentFrames) : null),
     [origData, currentFrames]
   );
   const percents: FlatData | null = useMemo(
-    () =>
-      origData == null ? null : getPercents(origData.frames, currentFrames),
+    () => (canCalc ? getPercents(origData.frames, currentFrames) : null),
     [origData, currentFrames]
   );
 

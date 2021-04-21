@@ -10,36 +10,28 @@ export default class BarD3 {
   playerId: number;
   tooltip: d3.Selection<d3.BaseType, unknown, null, undefined>;
   currData: [number, number] | null;
+  tooltipText: (d: [number, number]) => string;
 
-  constructor(containerEl: HTMLDivElement, data: Data, playerId: number) {
+  constructor(
+    containerEl: HTMLDivElement,
+    data: Data,
+    playerId: number,
+    tooltipText: (d: [number, number]) => string
+  ) {
     this.containerEl = containerEl;
     this.container = d3.select(this.containerEl as d3.BaseType);
     this.data = data;
     this.playerId = playerId;
     this.tooltip = this.container.select('.tooltip');
     this.currData = null;
+    this.tooltipText = tooltipText;
     this.update();
-
-    this.container
-      .select('svg')
-      .select('.bars')
-      .selectAll('.bar')
-      .on('mousemove', (e, d) => {
-        this.currData = d as [number, number];
-      });
-
-    this.container
-      .select('svg')
-      .select('.bars')
-      .selectAll('.bar')
-      .on('mouseleave', e => {
-        this.currData = null;
-      });
   }
 
   updateData(data: Data) {
     this.data = data;
     this.update();
+    console.log(data.length);
   }
 
   update() {
@@ -48,7 +40,7 @@ export default class BarD3 {
     const barHeight = height / this.data.length;
 
     const axisMax = d3.max(this.data.map(d => d[1]));
-    const bars = svg.select('.bars').selectAll('.bar').data(this.data);
+    const bars = svg.select('g.bars').selectAll('.bar').data(this.data);
 
     const barsEnter = bars
       .enter()
@@ -61,6 +53,14 @@ export default class BarD3 {
       .attr('height', barHeight)
       .attr('width', d => `${(d[1] / axisMax) * 100}%`)
       .style('transform', (d, i) => `translateY(${barHeight * i}px)`);
+
+    bars.on('mousemove', (e, d) => {
+      this.currData = d as [number, number];
+    });
+
+    bars.on('mouseleave', e => {
+      this.currData = null;
+    });
 
     bars.exit().remove();
   }
@@ -81,13 +81,14 @@ export default class BarD3 {
       this.container
         .select('.tooltip-text')
         .select('p')
-        .text(`${this.currData[1]}`);
+        .text(this.tooltipText(this.currData));
     } else {
       this.container.select('.tooltip-text').style('visibility', 'hidden');
     }
   }
 
-  onMouseLeave(e: React.MouseEvent<HTMLDivElement, MouseEvent>) {
+  onMouseOut(e: React.MouseEvent<HTMLDivElement, MouseEvent>) {
     this.currData = null;
+    this.container.select('.tooltip-text').style('visibility', 'hidden');
   }
 }

@@ -23,6 +23,7 @@ const PlayerInfo = ({
 
   const techs = getTechOptions(frames, playerIndex, opponentIndex);
   const states = countStates(frames, playerIndex);
+  console.log(states);
 
   return (
     <div style={{ width: '300px' }}>
