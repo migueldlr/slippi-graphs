@@ -156,9 +156,37 @@ export default function Home() {
         }}
       >
         <div style={{ position: 'relative' }}>{brush}</div>
-        <Line data={percents} frame={frame} setFrame={setFrame} />
-        <Line data={inputs} frame={frame} setFrame={setFrame} />
-        <Line data={distances} frame={frame} setFrame={setFrame} />
+        <Line
+          title="Percent"
+          data={percents}
+          frame={frame}
+          setFrame={setFrame}
+          tooltipText={(frame, data) => {
+            return `Player ${data[0][0] + 1}: ${data[0][1].toFixed(
+              1
+            )}%\nPlayer ${data[1][0] + 1}: ${data[1][1].toFixed(1)}%`;
+          }}
+        />
+        <Line
+          title="Actions per Second"
+          data={inputs}
+          frame={frame}
+          setFrame={setFrame}
+          tooltipText={(frame, data) => {
+            return `Player ${data[0][0] + 1}: ${data[0][1]}%\nPlayer ${
+              data[1][0] + 1
+            }: ${data[1][1]}`;
+          }}
+        />
+        <Line
+          title="Distance between Players"
+          data={distances}
+          frame={frame}
+          setFrame={setFrame}
+          tooltipText={(frame, data) => {
+            return `${data[0][1]}`;
+          }}
+        />
       </div>
     </div>
   );

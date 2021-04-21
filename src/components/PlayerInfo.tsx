@@ -68,6 +68,7 @@ const PlayerInfo = ({
   return (
     <div style={{ display: 'flex' }}>
       <Bar
+        title="Character states"
         data={states}
         playerId={playerIndex}
         tooltipText={stateTooltipText}

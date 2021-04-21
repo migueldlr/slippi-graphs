@@ -5,6 +5,7 @@ interface Props {
   data: [number, number][];
   playerId: number;
   tooltipText: (d: [number, number]) => string;
+  title: string;
 }
 
 const Bar = (props: Props) => {
@@ -25,17 +26,20 @@ const Bar = (props: Props) => {
   }, [props.data]);
 
   return (
-    <div
-      ref={ref}
-      style={{ position: 'relative' }}
-      onMouseMove={e => vis.current.onMouseMove(e)}
-      onMouseOut={e => vis.current.onMouseOut(e)}
-    >
-      <svg height="200" width="300">
-        <g className="bars"></g>
-      </svg>
-      <div className="tooltip-text" style={{ position: 'absolute' }}>
-        <p></p>
+    <div>
+      <p className="subtitle">{props.title}</p>
+      <div
+        ref={ref}
+        style={{ position: 'relative' }}
+        onMouseMove={e => vis.current.onMouseMove(e)}
+        onMouseOut={e => vis.current.onMouseOut(e)}
+      >
+        <svg height="200" width="300">
+          <g className="bars"></g>
+        </svg>
+        <div className="tooltip-text" style={{ position: 'absolute' }}>
+          <p></p>
+        </div>
       </div>
     </div>
   );

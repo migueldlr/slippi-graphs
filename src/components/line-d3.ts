@@ -15,21 +15,38 @@ export default class LineD3 {
   yScale: d3.ScaleLinear<number, number, never>;
   playerIds: number[];
   tooltip: d3.Selection<d3.BaseType, unknown, null, undefined>;
+  tooltipText: (frame: number, d: [number, number][]) => string;
+  unflattenedData: {};
 
-  constructor(containerEl: HTMLDivElement, data: Data) {
+  constructor(containerEl: HTMLDivElement, data: Data, tooltipText) {
     this.containerEl = containerEl;
     this.container = d3.select(this.containerEl as d3.BaseType);
     this.data = data;
+    this.playerIds = Object.keys(this.data).map(x => +x);
+    this.unflattenData();
+    this.tooltipText = tooltipText;
     this.update();
   }
 
   updateData(data) {
     this.data = data;
+    this.unflattenData();
     this.update();
   }
 
+  unflattenData() {
+    this.unflattenedData = {};
+    this.playerIds.forEach(id => {
+      const out = {};
+      const player = this.data[id];
+      player.forEach(([frame, data]) => {
+        out[frame] = data;
+      });
+      this.unflattenedData[id] = out;
+    });
+  }
+
   update() {
-    this.playerIds = Object.keys(this.data).map(x => +x);
     const xDomain = d3.extent(
       d3.merge<number>(
         this.playerIds.map(id => this.data[id].map(frame => frame[0]))
@@ -103,12 +120,9 @@ export default class LineD3 {
       .select('.marker')
       .select(`.marker-line`)
       .attr('width', 1)
-      .attr('height', 200);
+      .attr('height', 100);
 
-    this.tooltip = this.container
-      .select('.tooltip')
-      .style('position', 'absolute')
-      .style('padding', `5px`);
+    this.tooltip = this.container.select('.tooltip-text');
 
     dots.exit().remove();
     lines.exit().remove();
@@ -138,29 +152,35 @@ export default class LineD3 {
     }
     markerG.style('visibility', 'visible');
     this.tooltip.style('visibility', 'visible');
-    const frameData = (id: number) => this.data[id].find(x => x[0] === frame);
 
     markerG.attr('transform', `translate(${this.xScale(frame)}, 0)`);
     this.playerIds.forEach(id => {
-      const y = this.yScale(frameData(id)[1]);
+      const y = this.yScale(this.unflattenedData[id][frame]);
       markerG
         .select('.dots')
         .select(`.p${id}`)
         .attr('transform', `translate(0, ${y})`);
     });
-    this.tooltip.style('left', `${this.xScale(frame)}px`);
-    this.tooltip.style(
-      'top',
-      `${window.pageYOffset + this.containerEl.getBoundingClientRect().top}px`
-    );
     this.tooltip
-      .select('.text')
-      .text(
-        `Frame ${frame}:\n` +
-          this.playerIds
-            .map(id => `Player ${id}: ${frameData(id)[1].toFixed(1)}%`)
-            .join('\n')
+      .style(
+        'left',
+        `${
+          this.containerEl.getBoundingClientRect().left + this.xScale(frame)
+        }px`
+      )
+      .style(
+        'top',
+        `${
+          window.pageYOffset + this.containerEl.getBoundingClientRect().top - 10
+        }px`
       );
+
+    this.tooltip.select('p').text(
+      this.tooltipText(
+        frame,
+        this.playerIds.map(id => [id, this.unflattenedData[id][frame]])
+      )
+    );
     return frame;
   }
 }

@@ -44,7 +44,7 @@ export default class BarD3 {
     const barsEnter = bars
       .enter()
       .append('rect')
-      .attr('class', `bar p${this.playerId}`);
+      .attr('class', `bar hoverable p${this.playerId}`);
 
     barsEnter.merge(bars);
 

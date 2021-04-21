@@ -107,8 +107,8 @@ const Brush = (props: Props) => {
       .on('brush', function (event, d) {
         const s = event.selection;
         // update and move labels
-        labelL.attr('x', s[0]).text(d3.format('.0f')(x.invert(s[0])));
-        labelR.attr('x', s[1]).text(d3.format('.0f')(x.invert(s[1])));
+        // labelL.attr('x', s[0]).text(d3.format('.0f')(x.invert(s[0])));
+        // labelR.attr('x', s[1]).text(d3.format('.0f')(x.invert(s[1])));
         // move brush handles
         handle.attr('display', null).attr('transform', function (d, i) {
           return 'translate(' + [s[i], -height / 4] + ')';

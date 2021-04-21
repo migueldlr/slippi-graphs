@@ -157,7 +157,6 @@ export const getShieldOptions = (
 
     out[+state] = [...(out[+state] ?? []), +frame];
   }
-  console.log(out);
   return out;
 };
 

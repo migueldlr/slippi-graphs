@@ -28,7 +28,7 @@ const StackedBar = (props: Props) => {
 
   return (
     <div>
-      <p style={{ margin: 0, fontSize: 12 }}>{props.title}</p>
+      <p className="subtitle">{props.title}</p>
       <div
         ref={ref}
         style={{ position: 'relative' }}

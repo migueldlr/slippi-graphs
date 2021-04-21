@@ -98,6 +98,7 @@ input[type='range'] {
 
 .tooltip-text {
   background-color: white;
+  position: absolute;
   z-index: 5;
   padding: 5px;
   box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
@@ -106,4 +107,18 @@ input[type='range'] {
 
 .tooltip-text > p {
   margin: 0;
+  font-size: 12px;
+}
+
+.hoverable:hover {
+  filter: invert(1);
+}
+
+.hoverable2:hover {
+  opacity: 0.5;
+}
+
+.subtitle {
+  margin: 0;
+  font-size: 12px;
 }

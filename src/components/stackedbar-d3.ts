@@ -62,7 +62,7 @@ export default class StackedBarD3 {
     const barsEnter = bars
       .enter()
       .append('div')
-      .attr('class', `bar p${this.playerId}`);
+      .attr('class', `bar hoverable2 p${this.playerId}`);
 
     barsEnter.merge(bars);
 
