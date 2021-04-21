@@ -168,6 +168,9 @@ export default function Home() {
           frame={frame}
           setFrame={setFrame}
           tooltipText={(frame, data) => {
+            if (data[0][1] == null) {
+              return '';
+            }
             return `Player ${data[0][0] + 1}: ${data[0][1].toFixed(
               1
             )}%\nPlayer ${data[1][0] + 1}: ${data[1][1].toFixed(1)}%`;

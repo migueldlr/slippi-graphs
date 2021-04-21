@@ -45,7 +45,10 @@ const StackedBar = (props: Props) => {
           style={{ height: 20, width: 300, display: 'flex' }}
           className="bars"
         ></div>
-        <div className="tooltip-text" style={{ position: 'absolute' }}>
+        <div
+          className="tooltip-text"
+          style={{ position: 'absolute', whiteSpace: 'pre' }}
+        >
           <p></p>
         </div>
       </div>

@@ -5,6 +5,7 @@ import {
   actionIdToString,
   countConversionStarts,
   countStates,
+  frameCountToGameTime,
   getShieldOptions,
   getTechOptions,
 } from '../util/calc';
@@ -33,12 +34,16 @@ const PlayerInfo = ({
 }: Props) => {
   const techs = getTechOptions(frames, playerIndex, opponentIndex);
   const techTooltipText = (d: IndividualData) => {
-    return `${TECH_OPTIONS[d.data]}: ${d.sectionTotal}\n${d.frameIdx}`;
+    return `${TECH_OPTIONS[d.data]}: ${d.sectionTotal}\n${frameCountToGameTime(
+      d.frameIdx
+    )}`;
   };
 
   const shields = getShieldOptions(frames, playerIndex, opponentIndex);
   const shieldTooltipText = (d: IndividualData) => {
-    return `${actionIdToString(d.data)}: ${d.sectionTotal}\n${d.frameIdx}`;
+    return `${actionIdToString(d.data)}: ${
+      d.sectionTotal
+    }\n${frameCountToGameTime(d.frameIdx)}`;
   };
 
   const neutralWins = countConversionStarts(
@@ -48,7 +53,9 @@ const PlayerInfo = ({
     'neutral-win'
   );
   const neutralTooltipText = (d: IndividualData) => {
-    return `${MOVE_IDS[d.data]}: ${d.sectionTotal}\n${d.frameIdx}`;
+    return `${MOVE_IDS[d.data]}: ${d.sectionTotal}\n${frameCountToGameTime(
+      d.frameIdx
+    )}`;
   };
 
   const counterAttacks = countConversionStarts(
