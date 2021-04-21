@@ -5,7 +5,7 @@ import Line from '../components/Line';
 import Map from '../components/Map';
 import { Data, FlatData } from '../util/types';
 import InputDisplay from '../components/InputDisplay';
-import PlayerInfo from '../components/PlayerInfo';
+import PlayerStats from '../components/PlayerStats';
 import {
   distanceBetween,
   filterData,
@@ -102,7 +102,7 @@ export default function Home() {
             : null
         }
       />
-      <PlayerInfo
+      <PlayerStats
         setFrame={setFrame}
         frames={data.frames}
         metadata={data.metadata}
