@@ -124,6 +124,25 @@ export default class LineD3 {
 
     this.tooltip = this.container.select('.tooltip-text');
 
+    const axis = svg.select('.axis');
+    axis.selectAll('rect').attr('width', 10).attr('height', 1);
+    axis
+      .selectAll('text')
+      .style('font-size', 10)
+      .style('transform', `translate(10px, 4px)`);
+
+    const highMarker = axis.select('.high');
+    highMarker.select('text').text(yDomain[1].toFixed(1));
+
+    const lowMarker = axis.select('.low');
+    lowMarker.style(
+      'transform',
+      `translateY(${
+        (svg.node() as SVGSVGElement).getBoundingClientRect().height
+      }px)`
+    );
+    lowMarker.select('text').text(yDomain[0].toFixed(1));
+
     dots.exit().remove();
     lines.exit().remove();
   }

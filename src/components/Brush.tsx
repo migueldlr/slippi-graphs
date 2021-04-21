@@ -283,7 +283,7 @@ const Brush = (props: Props) => {
         <p
           style={{
             position: 'absolute',
-            top: 50,
+            top: -15,
             left: `50%`,
             margin: 0,
             fontSize: '12px',

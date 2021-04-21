@@ -65,13 +65,7 @@ const PlayerInfo = ({
 
   return (
     <div style={{ display: 'flex' }}>
-      <Bar
-        title="Character states"
-        data={states}
-        playerId={playerIndex}
-        tooltipText={stateTooltipText}
-      />
-      <div>
+      <div style={{ marginRight: '5px' }}>
         <StackedBar
           title="Tech"
           data={techs}
@@ -101,6 +95,12 @@ const PlayerInfo = ({
           setFrame={setFrame}
         />
       </div>
+      <Bar
+        title="Character states"
+        data={states}
+        playerId={playerIndex}
+        tooltipText={stateTooltipText}
+      />
     </div>
   );
 };

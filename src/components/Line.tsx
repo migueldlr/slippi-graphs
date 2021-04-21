@@ -26,8 +26,10 @@ const Line = ({ data, frame, setFrame, title, tooltipText }: Props) => {
   }, [frame]);
 
   return (
-    <div>
-      <p className="subtitle">{title}</p>
+    <div style={{ marginBottom: '10px' }}>
+      <p className="subtitle" style={{ marginBottom: '5px' }}>
+        {title}
+      </p>
       <div
         ref={ref}
         id="scatter"
@@ -49,6 +51,16 @@ const Line = ({ data, frame, setFrame, title, tooltipText }: Props) => {
           <g className="marker">
             <rect className="marker-line" />
             <g className="dots" />
+          </g>
+          <g className="axis">
+            <g className="high">
+              <rect />
+              <text />
+            </g>
+            <g className="low">
+              <rect />
+              <text />
+            </g>
           </g>
         </svg>
         <div className="tooltip-text">

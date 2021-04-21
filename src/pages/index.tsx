@@ -94,7 +94,7 @@ export default function Home() {
 
   const player = (player, opponent) => (
     <>
-      <div>
+      <div style={{ margin: '0px 5px' }}>
         <PlayerInfo
           playerIndex={player}
           stats={data.stats}
@@ -129,7 +129,7 @@ export default function Home() {
         display: `flex`,
         flexDirection: `column`,
         alignItems: `center`,
-        paddingBottom: 20,
+        padding: `20px 0`,
       }}
       className="container"
     >
