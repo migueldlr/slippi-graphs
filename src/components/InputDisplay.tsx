@@ -236,11 +236,13 @@ const InputDisplay = ({ frame: initFrame }: Props) => {
       <div>
         <p>
           {actionStateId == -1 ? null : actionStateId}{' '}
-          {action == null
-            ? null
-            : action.notes.length > 0
-            ? action.notes
-            : action.state}
+          {action == null ? (
+            <>&nbsp;</>
+          ) : action.notes.length > 0 ? (
+            action.notes
+          ) : (
+            action.state
+          )}
         </p>
       </div>
     </div>

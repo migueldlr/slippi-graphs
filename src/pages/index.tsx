@@ -36,7 +36,7 @@ export default function Home() {
       console.log(data.stats);
       console.log(data.metadata);
       console.log(data.settings);
-      console.log(Object.keys(data.frames).length);
+      console.log(data.frames[0]);
       console.log(data.inputs);
     })();
   }, []);
@@ -84,13 +84,6 @@ export default function Home() {
     >
       <div style={{ display: 'flex' }}>
         <div>
-          <PlayerInfo
-            frames={data.frames}
-            metadata={data.metadata}
-            playerIndex={playerIds[0]}
-            opponentIndex={playerIds[1]}
-            stats={data.stats}
-          />
           <InputDisplay
             frame={
               frame == null
@@ -99,6 +92,14 @@ export default function Home() {
                 ? data.frames[frame].players[playerIds[0]].pre
                 : null
             }
+          />
+          <PlayerInfo
+            setFrame={setFrame}
+            frames={data.frames}
+            metadata={data.metadata}
+            playerIndex={playerIds[0]}
+            opponentIndex={playerIds[1]}
+            stats={data.stats}
           />
         </div>
         <div>
@@ -111,13 +112,6 @@ export default function Home() {
           />
         </div>
         <div>
-          <PlayerInfo
-            frames={data.frames}
-            metadata={data.metadata}
-            playerIndex={playerIds[1]}
-            opponentIndex={playerIds[0]}
-            stats={data.stats}
-          />
           <InputDisplay
             frame={
               frame == null
@@ -126,6 +120,14 @@ export default function Home() {
                 ? data.frames[frame].players[playerIds[1]].pre
                 : null
             }
+          />
+          <PlayerInfo
+            setFrame={setFrame}
+            frames={data.frames}
+            metadata={data.metadata}
+            playerIndex={playerIds[1]}
+            opponentIndex={playerIds[0]}
+            stats={data.stats}
           />
         </div>
       </div>

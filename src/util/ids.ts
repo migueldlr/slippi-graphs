@@ -34,6 +34,200 @@ const CHARACTER_IDS = {
   '32': 'Sandbag',
 };
 
+enum CharacterExternal {
+  CAPTAIN_FALCON = 0,
+  DONKEY_KONG = 1,
+  FOX = 2,
+  GAME_AND_WATCH = 3,
+  KIRBY = 4,
+  BOWSER = 5,
+  LINK = 6,
+  LUIGI = 7,
+  MARIO = 8,
+  MARTH = 9,
+  MEWTWO = 10,
+  NESS = 11,
+  PEACH = 12,
+  PIKACHU = 13,
+  ICE_CLIMBERS = 14,
+  JIGGLYPUFF = 15,
+  SAMUS = 16,
+  YOSHI = 17,
+  ZELDA = 18,
+  SHEIK = 19,
+  FALCO = 20,
+  YOUNG_LINK = 21,
+  DR_MARIO = 22,
+  ROY = 23,
+  PICHU = 24,
+  GANONDORF = 25,
+}
+export type CharacterColor = string;
+export interface CharacterInfo {
+  id: number;
+  name: string;
+  shortName: string;
+  colors: CharacterColor[];
+}
+const externalCharacters: CharacterInfo[] = [
+  {
+    id: CharacterExternal.CAPTAIN_FALCON,
+    name: 'Captain Falcon',
+    shortName: 'Falcon',
+    colors: ['Default', 'Black', 'Red', 'White', 'Green', 'Blue'],
+  },
+  {
+    id: CharacterExternal.DONKEY_KONG,
+    name: 'Donkey Kong',
+    shortName: 'DK',
+    colors: ['Default', 'Black', 'Red', 'Blue', 'Green'],
+  },
+  {
+    id: CharacterExternal.FOX,
+    name: 'Fox',
+    shortName: 'Fox',
+    colors: ['Default', 'Red', 'Blue', 'Green'],
+  },
+  {
+    id: CharacterExternal.GAME_AND_WATCH,
+    name: 'Mr. Game & Watch',
+    shortName: 'G&W',
+    colors: ['Default', 'Red', 'Blue', 'Green'],
+  },
+  {
+    id: CharacterExternal.KIRBY,
+    name: 'Kirby',
+    shortName: 'Kirby',
+    colors: ['Default', 'Yellow', 'Blue', 'Red', 'Green', 'White'],
+  },
+  {
+    id: CharacterExternal.BOWSER,
+    name: 'Bowser',
+    shortName: 'Bowser',
+    colors: ['Default', 'Red', 'Blue', 'Black'],
+  },
+  {
+    id: CharacterExternal.LINK,
+    name: 'Link',
+    shortName: 'Link',
+    colors: ['Default', 'Red', 'Blue', 'Black', 'White'],
+  },
+  {
+    id: CharacterExternal.LUIGI,
+    name: 'Luigi',
+    shortName: 'Luigi',
+    colors: ['Default', 'White', 'Blue', 'Red'],
+  },
+  {
+    id: CharacterExternal.MARIO,
+    name: 'Mario',
+    shortName: 'Mario',
+    colors: ['Default', 'Yellow', 'Black', 'Blue', 'Green'],
+  },
+  {
+    id: CharacterExternal.MARTH,
+    name: 'Marth',
+    shortName: 'Marth',
+    colors: ['Default', 'Red', 'Green', 'Black', 'White'],
+  },
+  {
+    id: CharacterExternal.MEWTWO,
+    name: 'Mewtwo',
+    shortName: 'Mewtwo',
+    colors: ['Default', 'Red', 'Blue', 'Green'],
+  },
+  {
+    id: CharacterExternal.NESS,
+    name: 'Ness',
+    shortName: 'Ness',
+    colors: ['Default', 'Yellow', 'Blue', 'Green'],
+  },
+  {
+    id: CharacterExternal.PEACH,
+    name: 'Peach',
+    shortName: 'Peach',
+    colors: ['Default', 'Daisy', 'White', 'Blue', 'Green'],
+  },
+  {
+    id: CharacterExternal.PIKACHU,
+    name: 'Pikachu',
+    shortName: 'Pikachu',
+    colors: ['Default', 'Red', 'Party Hat', 'Cowboy Hat'],
+  },
+  {
+    id: CharacterExternal.ICE_CLIMBERS,
+    name: 'Ice Climbers',
+    shortName: 'ICs',
+    colors: ['Default', 'Green', 'Orange', 'Red'],
+  },
+  {
+    id: CharacterExternal.JIGGLYPUFF,
+    name: 'Jigglypuff',
+    shortName: 'Puff',
+    colors: ['Default', 'Red', 'Blue', 'Headband', 'Crown'],
+  },
+  {
+    id: CharacterExternal.SAMUS,
+    name: 'Samus',
+    shortName: 'Samus',
+    colors: ['Default', 'Pink', 'Black', 'Green', 'Purple'],
+  },
+  {
+    id: CharacterExternal.YOSHI,
+    name: 'Yoshi',
+    shortName: 'Yoshi',
+    colors: ['Default', 'Red', 'Blue', 'Yellow', 'Pink', 'Cyan'],
+  },
+  {
+    id: CharacterExternal.ZELDA,
+    name: 'Zelda',
+    shortName: 'Zelda',
+    colors: ['Default', 'Red', 'Blue', 'Green', 'White'],
+  },
+  {
+    id: CharacterExternal.SHEIK,
+    name: 'Sheik',
+    shortName: 'Sheik',
+    colors: ['Default', 'Red', 'Blue', 'Green', 'White'],
+  },
+  {
+    id: CharacterExternal.FALCO,
+    name: 'Falco',
+    shortName: 'Falco',
+    colors: ['Default', 'Red', 'Blue', 'Green'],
+  },
+  {
+    id: CharacterExternal.YOUNG_LINK,
+    name: 'Young Link',
+    shortName: 'YLink',
+    colors: ['Default', 'Red', 'Blue', 'White', 'Black'],
+  },
+  {
+    id: CharacterExternal.DR_MARIO,
+    name: 'Dr. Mario',
+    shortName: 'Doc',
+    colors: ['Default', 'Red', 'Blue', 'Green', 'Black'],
+  },
+  {
+    id: CharacterExternal.ROY,
+    name: 'Roy',
+    shortName: 'Roy',
+    colors: ['Default', 'Red', 'Blue', 'Green', 'Yellow'],
+  },
+  {
+    id: CharacterExternal.PICHU,
+    name: 'Pichu',
+    shortName: 'Pichu',
+    colors: ['Default', 'Red', 'Blue', 'Green'],
+  },
+  {
+    id: CharacterExternal.GANONDORF,
+    name: 'Ganondorf',
+    shortName: 'Ganon',
+    colors: ['Default', 'Red', 'Blue', 'Green', 'Purple'],
+  },
+];
+
 const STAGE_IDS = {
   2: 'Fountain of Dreams',
   3: 'Pokemon Stadium',
@@ -67,4 +261,4 @@ const STAGE_IDS = {
   32: 'Final Destination',
 };
 
-export { CHARACTER_IDS, STAGE_IDS };
+export { CHARACTER_IDS, STAGE_IDS, externalCharacters };

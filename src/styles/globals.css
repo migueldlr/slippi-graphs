@@ -95,3 +95,8 @@ input[type='range'] {
   height: 128px;
   width: 128px;
 }
+
+.tooltip-text {
+  background-color: white;
+  z-index: 5;
+}

@@ -1,4 +1,5 @@
 import { FramesType, MetadataType } from '@slippi/slippi-js';
+import { ACTION_STATES } from './actionStates';
 import { Data, FrameID, InputsType, PlayerID, Tech } from './types';
 
 export const getPositions = (frames: FramesType, playerId = 0) => {
@@ -89,11 +90,11 @@ export const getTechOptions = (
   playerIndex: number,
   opponentIndex: number
 ) => {
-  const out: Record<Tech, number> = {
-    [Tech.IN_PLACE]: 0,
-    [Tech.MISSED]: 0,
-    [Tech.IN]: 0,
-    [Tech.AWAY]: 0,
+  const out: Record<Tech, number[]> = {
+    [Tech.IN_PLACE]: [],
+    [Tech.MISSED]: [],
+    [Tech.IN]: [],
+    [Tech.AWAY]: [],
   };
 
   for (let frame in frames) {
@@ -115,19 +116,48 @@ export const getTechOptions = (
     switch (state) {
       case 183:
       case 191:
-        out[Tech.MISSED] += 1;
+        out[Tech.MISSED].push(+frame);
         break;
       case 199:
-        out[Tech.IN_PLACE] += 1;
+        out[Tech.IN_PLACE].push(+frame);
         break;
       case 200:
       case 201:
-        out[xVel < 0 == xDiff < 0 ? Tech.IN : Tech.AWAY] += 1;
+        out[xVel < 0 == xDiff < 0 ? Tech.IN : Tech.AWAY].push(+frame);
         break;
       default:
         break;
     }
   }
+  return out;
+};
+
+export const getShieldOptions = (
+  frames: FramesType,
+  playerIndex: number,
+  opponentIndex: number
+) => {
+  const out: Record<number, number[]> = {};
+
+  for (let frame in frames) {
+    const state = frames[frame].players[playerIndex].pre.actionStateId;
+    if (+frame - 1 <= 1 || !(+frame - 1 in frames)) {
+      continue;
+    }
+
+    const prevState = frames[+frame - 1].players[playerIndex].pre.actionStateId;
+    if (state === prevState || prevState !== 179) continue;
+
+    const xVel =
+      frames[frame].players[playerIndex].post.selfInducedSpeeds.groundX;
+
+    const xDiff =
+      frames[frame].players[opponentIndex].post.positionX -
+      frames[frame].players[playerIndex].post.positionX;
+
+    out[+state] = [...(out[+state] ?? []), +frame];
+  }
+  console.log(out);
   return out;
 };
 
@@ -166,6 +196,15 @@ export const frameCountToGameTime = (frame: number) => {
     .padEnd(2, '0')}`;
 };
 
+export const actionIdToString = (id: number) => {
+  const action = ACTION_STATES[id];
+  return action == null
+    ? 'Missing State'
+    : action.notes.length > 0
+    ? action.notes
+    : action.state;
+};
+
 export const distanceBetween = (
   frames: FramesType,
   currentFrames: [number, number]
@@ -174,7 +213,9 @@ export const distanceBetween = (
 
   let playerIds: number[];
   for (let x in frames) {
-    playerIds = Object.keys(frames[x].players).map(x => +x);
+    playerIds = Object.keys(frames[x].players)
+      .filter(id => frames[x].players[id])
+      .map(x => +x);
     break;
   }
 
@@ -185,8 +226,6 @@ export const distanceBetween = (
 
     out.push([+i, Math.hypot(p1x - p2x, p1y - p2y)]);
   }
-
-  console.log(out);
 
   return out;
 };

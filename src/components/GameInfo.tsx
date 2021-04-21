@@ -7,6 +7,7 @@ interface Props {
 }
 
 const GameInfo = ({ settings }: Props) => {
+  const playerIds = settings.players.map(p => p.port - 1);
   return <div>{STAGE_IDS[settings.stageId]}</div>;
 };
 
