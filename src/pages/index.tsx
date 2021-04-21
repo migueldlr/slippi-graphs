@@ -19,6 +19,7 @@ import {
   getAPM,
   getPercents,
 } from '../util/calc';
+import BrushOverlay from '../components/BrushOverlay';
 
 export default function Home() {
   const [origData, setOrigData] = useState<Data | null>(null);
@@ -131,28 +132,39 @@ export default function Home() {
       <p>
         {frame ?? 'no frame'} -{' '}
         {frame != null ? frameCountToGameTime(frame) : 0} -{' '}
-        {JSON.stringify(currentFrames)}
+        {JSON.stringify(currentFrames)} -{' '}
+        {`[${frameCountToGameTime(currentFrames[0])}, ${frameCountToGameTime(
+          currentFrames[1]
+        )}]`}
       </p>
       <div
         style={{
           width: `80%`,
         }}
       >
-        <Brush
-          min={0}
-          max={data.stats.lastFrame}
-          setValue={e => setCurrentFrames(e)}
-          value={currentFrames}
-          marks={data.stats.stocks.map(stock => {
-            return [stock.endFrame, `Player ${stock.playerIndex} dies`];
-          })}
-          bands={data.stats.conversions.map(conversion => {
-            return [
-              [conversion.startFrame, conversion.endFrame],
-              conversion.playerIndex,
-            ];
-          })}
-        />
+        <div style={{ position: 'relative' }}>
+          {/* <div
+            style={{ position: 'absolute', top: 0, width: '100%', zIndex: -1 }}
+          >
+            <BrushOverlay min={0} max={data.stats.lastFrame} value={frame} />
+          </div> */}
+          <Brush
+            min={0}
+            max={data.stats.lastFrame}
+            setValue={e => setCurrentFrames(e)}
+            value={currentFrames}
+            marks={data.stats.stocks.map(stock => {
+              return [stock.endFrame, `Player ${stock.playerIndex} dies`];
+            })}
+            bands={data.stats.conversions.map(conversion => {
+              return [
+                [conversion.startFrame, conversion.endFrame],
+                conversion.playerIndex,
+              ];
+            })}
+            frame={frame}
+          />
+        </div>
         <Line
           percents={percents}
           frame={frame}

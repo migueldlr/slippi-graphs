@@ -1,5 +1,5 @@
 import * as d3 from 'd3';
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 
 interface Props {
   min: number;
@@ -8,6 +8,7 @@ interface Props {
   setValue: (x: [number, number]) => void;
   bands?: [[number, number], number][];
   marks?: [number, string][];
+  frame?: number;
 }
 
 interface SVGElementWithValue extends SVGSVGElement {
@@ -209,6 +210,27 @@ const Brush = (props: Props) => {
     });
   }, []);
 
+  const scale = useRef(
+    d3
+      .scaleLinear()
+      .domain([props.min, props.max]) // data space
+      .range([0, 100])
+  );
+
+  const ref = useRef(null);
+
+  useEffect(() => {
+    const marker = d3.select(ref.current);
+
+    if (props.frame == null) {
+      marker.style('visibility', 'hidden');
+    } else {
+      marker
+        .style('visibility', 'visible')
+        .style('left', `calc(${scale.current(props.frame)}% - 1px)`);
+    }
+  }, [props.frame]);
+
   return (
     <div
       id="slider"
@@ -217,8 +239,21 @@ const Brush = (props: Props) => {
         height: `50px`,
         backgroundColor: `#D8D5DB`,
         overflow: `visible`,
+        position: 'relative',
       }}
     >
+      <div
+        ref={ref}
+        className="marker"
+        style={{
+          zIndex: 10,
+          height: 50,
+          width: 4,
+          backgroundColor: 'black',
+          position: 'absolute',
+          top: 0,
+        }}
+      />
       {sliderEl}
     </div>
   );

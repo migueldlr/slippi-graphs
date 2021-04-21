@@ -117,28 +117,13 @@ export const getTechOptions = (
     switch (state) {
       case 183:
       case 191:
-        // console.log({
-        //   playerIndex,
-        //   at: frameCountToGameTime(+frame),
-        //   type: Tech.MISSED,
-        // });
         out[Tech.MISSED] += 1;
         break;
       case 199:
-        // console.log({
-        //   playerIndex,
-        //   at: frameCountToGameTime(+frame),
-        //   type: Tech.IN_PLACE,
-        // });
         out[Tech.IN_PLACE] += 1;
         break;
       case 200:
       case 201:
-        // console.log({
-        //   playerIndex,
-        //   at: frameCountToGameTime(+frame),
-        //   type: xVel < 0 == xDiff < 0 ? Tech.IN : Tech.AWAY,
-        // });
         out[xVel < 0 == xDiff < 0 ? Tech.IN : Tech.AWAY] += 1;
         break;
       default:
@@ -147,6 +132,16 @@ export const getTechOptions = (
   }
   return out;
 };
+
+export function countStates(frames: FramesType, playerId: number) {
+  const stateCounts: Record<number, number> = {};
+  for (let frameId in frames) {
+    const frame = frames[frameId].players[playerId].pre;
+    stateCounts[frame.actionStateId] =
+      (stateCounts[frame.actionStateId] ?? 0) + 1;
+  }
+  return stateCounts;
+}
 
 const frameCountToSeconds = (frame: number) => {
   const seconds = Math.floor(frame / 60);
