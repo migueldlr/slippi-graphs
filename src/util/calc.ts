@@ -1,4 +1,4 @@
-import { FramesType, MetadataType } from '@slippi/slippi-js';
+import { FramesType, MetadataType, StatsType } from '@slippi/slippi-js';
 import { ACTION_STATES } from './actionStates';
 import { Data, FrameID, InputsType, PlayerID, Tech } from './types';
 
@@ -176,6 +176,30 @@ export function countStates(
     x[1],
   ]);
   return out.sort((a, b) => b[1] - a[1]);
+}
+
+export function countConversionStarts(
+  stats: StatsType,
+  frames: FramesType,
+  playerId: number,
+  type: 'neutral-win' | 'counter-attack'
+) {
+  const out: Record<number, number[]> = {};
+  const { conversions } = stats;
+
+  for (let conversion of conversions) {
+    const move = conversion.moves[0];
+    if (
+      conversion.openingType !== type ||
+      !(move.frame in frames) ||
+      conversion.playerIndex != playerId
+    ) {
+      continue;
+    }
+    out[move.moveId] = [...(out[move.moveId] ?? []), move.frame];
+  }
+
+  return out;
 }
 
 const frameCountToSeconds = (frame: number) => {

@@ -37,8 +37,9 @@ export default class MapD3 {
     string,
     d3.Selection<d3.BaseType, unknown, null, undefined>
   >;
-  size: number;
+  width: number;
   canvas: HTMLCanvasElement;
+  height: number;
 
   constructor(containerEl: HTMLDivElement, data) {
     this.fakeContainerEl = document.createElement('custom');
@@ -59,19 +60,20 @@ export default class MapD3 {
     this.fakeCtx = fakeCanvas.getContext('2d');
     this.ctx = this.canvas.getContext('2d');
 
-    this.size = 500;
+    this.width = +this.canvas.width;
+    this.height = +this.canvas.height;
     const scale = window.devicePixelRatio;
 
-    this.canvas.style.width = `${this.size}px`;
-    this.canvas.style.height = `${this.size}px`;
-    this.canvas.width = Math.floor(this.size * scale);
-    this.canvas.height = Math.floor(this.size * scale);
+    this.canvas.style.width = `${this.width}px`;
+    this.canvas.style.height = `${this.height}px`;
+    this.canvas.width = Math.floor(this.width * scale);
+    this.canvas.height = Math.floor(this.height * scale);
     this.ctx.scale(scale, scale);
 
-    fakeCanvas.style.width = `${this.size}px`;
-    fakeCanvas.style.height = `${this.size}px`;
-    fakeCanvas.width = Math.floor(this.size * scale);
-    fakeCanvas.height = Math.floor(this.size * scale);
+    fakeCanvas.style.width = `${this.width}px`;
+    fakeCanvas.style.height = `${this.height}px`;
+    fakeCanvas.width = Math.floor(this.width * scale);
+    fakeCanvas.height = Math.floor(this.height * scale);
     this.fakeCtx.scale(scale, scale);
 
     this.playerIds = Object.keys(this.data.metadata.players).map(id => +id);
@@ -88,9 +90,9 @@ export default class MapD3 {
   }
 
   clear(preserveFake: boolean) {
-    this.ctx.clearRect(0, 0, this.size, this.size);
+    this.ctx.clearRect(0, 0, this.width, this.width);
     if (!preserveFake) {
-      this.fakeCtx.clearRect(0, 0, this.size, this.size);
+      this.fakeCtx.clearRect(0, 0, this.width, this.width);
       this.colors.clear();
       this.colorToNode = {};
     }
@@ -155,8 +157,8 @@ export default class MapD3 {
     }
     ctx.beginPath();
     ctx.arc(
-      +node.attr('x') + this.size / 2,
-      -+node.attr('y') + this.size / 2,
+      +node.attr('x') + this.width / 2,
+      -+node.attr('y') + this.height / 2,
       4,
       0,
       2 * Math.PI

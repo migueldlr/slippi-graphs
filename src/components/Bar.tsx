@@ -31,7 +31,7 @@ const Bar = (props: Props) => {
       onMouseMove={e => vis.current.onMouseMove(e)}
       onMouseOut={e => vis.current.onMouseOut(e)}
     >
-      <svg height="300" width="300">
+      <svg height="200" width="300">
         <g className="bars"></g>
       </svg>
       <div className="tooltip-text" style={{ position: 'absolute' }}>

@@ -29,7 +29,6 @@ export default class StackedBarD3 {
     this.container = d3.select(this.containerEl as d3.BaseType);
     this.data = data;
     this.playerId = playerId;
-    this.tooltip = this.container.select('.tooltip');
     this.currData = null;
     this.tooltipText = tooltipText;
     this.colorScale = d3.scaleOrdinal(d3.schemeTableau10);

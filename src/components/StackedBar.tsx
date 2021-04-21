@@ -6,6 +6,7 @@ interface Props {
   playerId: number;
   tooltipText: (d: IndividualData) => string;
   setFrame: React.Dispatch<React.SetStateAction<number>>;
+  title: string;
 }
 
 const StackedBar = (props: Props) => {
@@ -26,24 +27,27 @@ const StackedBar = (props: Props) => {
   }, [props.data]);
 
   return (
-    <div
-      ref={ref}
-      style={{ position: 'relative' }}
-      onMouseMove={e => {
-        const newFrame = vis.current.onMouseMove(e);
-        props.setFrame(newFrame);
-      }}
-      onMouseOut={e => {
-        vis.current.onMouseOut(e);
-        props.setFrame(null);
-      }}
-    >
+    <div>
+      <p style={{ margin: 0, fontSize: 12 }}>{props.title}</p>
       <div
-        style={{ height: 20, width: 300, display: 'flex' }}
-        className="bars"
-      ></div>
-      <div className="tooltip-text" style={{ position: 'absolute' }}>
-        <p></p>
+        ref={ref}
+        style={{ position: 'relative' }}
+        onMouseMove={e => {
+          const newFrame = vis.current.onMouseMove(e);
+          props.setFrame(newFrame);
+        }}
+        onMouseOut={e => {
+          vis.current.onMouseOut(e);
+          props.setFrame(null);
+        }}
+      >
+        <div
+          style={{ height: 20, width: 300, display: 'flex' }}
+          className="bars"
+        ></div>
+        <div className="tooltip-text" style={{ position: 'absolute' }}>
+          <p></p>
+        </div>
       </div>
     </div>
   );

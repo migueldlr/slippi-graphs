@@ -42,7 +42,7 @@ const Map = ({ data, currentFrames, frame, setFrame }: Props) => {
     <div ref={ref}>
       <canvas
         width="500"
-        height="500"
+        height="400"
         id="real"
         style={{ border: `1px solid black` }}
         onMouseMove={e => {
@@ -52,7 +52,7 @@ const Map = ({ data, currentFrames, frame, setFrame }: Props) => {
       ></canvas>
       <canvas
         width="500"
-        height="500"
+        height="400"
         id="fake"
         style={{ display: 'none', border: `1px solid black` }}
       />

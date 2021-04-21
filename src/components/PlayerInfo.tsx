@@ -3,12 +3,13 @@ import React from 'react';
 import { ACTION_STATES } from '../util/actionStates';
 import {
   actionIdToString,
+  countConversionStarts,
   countStates,
   getShieldOptions,
   getTechOptions,
 } from '../util/calc';
 import { TECH_OPTIONS } from '../util/constants';
-import { CHARACTER_IDS } from '../util/ids';
+import { CHARACTER_IDS, MOVE_IDS } from '../util/ids';
 import Bar from './Bar';
 import StackedBar from './StackedBar';
 import { IndividualData } from './stackedbar-d3';
@@ -33,7 +34,6 @@ const PlayerInfo = ({
   const chars = metadata.players[playerIndex].characters;
 
   const techs = getTechOptions(frames, playerIndex, opponentIndex);
-
   const techTooltipText = (d: IndividualData) => {
     return `${TECH_OPTIONS[d.data]}: ${d.sectionTotal}\n${d.frameIdx}`;
   };
@@ -43,30 +43,65 @@ const PlayerInfo = ({
     return `${actionIdToString(d.data)}: ${d.sectionTotal}\n${d.frameIdx}`;
   };
 
+  const neutralWins = countConversionStarts(
+    stats,
+    frames,
+    playerIndex,
+    'neutral-win'
+  );
+  const neutralTooltipText = (d: IndividualData) => {
+    return `${MOVE_IDS[d.data]}: ${d.sectionTotal}\n${d.frameIdx}`;
+  };
+
+  const counterAttacks = countConversionStarts(
+    stats,
+    frames,
+    playerIndex,
+    'counter-attack'
+  );
+
   const states = countStates(frames, playerIndex);
   const stateTooltipText = (d: [number, number]) => {
     return `${actionIdToString(d[0])}: ${d[1]}`;
   };
 
   return (
-    <div style={{ width: '300px' }}>
+    <div style={{ display: 'flex' }}>
       <Bar
         data={states}
         playerId={playerIndex}
         tooltipText={stateTooltipText}
       />
-      <StackedBar
-        data={techs}
-        playerId={playerIndex}
-        tooltipText={techTooltipText}
-        setFrame={setFrame}
-      />
-      <StackedBar
-        data={shields}
-        playerId={playerIndex}
-        tooltipText={shieldTooltipText}
-        setFrame={setFrame}
-      />
+      <div>
+        <StackedBar
+          title="Tech"
+          data={techs}
+          playerId={playerIndex}
+          tooltipText={techTooltipText}
+          setFrame={setFrame}
+        />
+        <StackedBar
+          title="Out-of-shield options"
+          data={shields}
+          playerId={playerIndex}
+          tooltipText={shieldTooltipText}
+          setFrame={setFrame}
+        />
+        <StackedBar
+          title="Neutral wins"
+          data={neutralWins}
+          playerId={playerIndex}
+          tooltipText={neutralTooltipText}
+          setFrame={setFrame}
+        />
+        <StackedBar
+          title="Counter attacks"
+          data={counterAttacks}
+          playerId={playerIndex}
+          tooltipText={neutralTooltipText}
+          setFrame={setFrame}
+        />
+      </div>
     </div>
   );
 };

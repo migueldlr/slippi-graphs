@@ -196,13 +196,20 @@ const InputDisplay = ({ frame: initFrame }: Props) => {
   const action = ACTION_STATES[actionStateId];
 
   return (
-    <div>
+    <div
+      style={{
+        width: '250px',
+        height: '100px',
+      }}
+    >
       <div
         style={{
           position: 'relative',
           width: '500px',
           height: '200px',
           backgroundColor: 'black',
+          transform: `scale(0.5) translate(-50%, -50%)`,
+          marginBottom: '-100px',
         }}
       >
         <div className="inputbutton" style={{ left: 25, top: 10 }}>

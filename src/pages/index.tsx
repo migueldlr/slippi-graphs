@@ -72,6 +72,47 @@ export default function Home() {
 
   const playerIds = Object.keys(data.metadata.players).map(id => +id);
 
+  const brush = (
+    <Brush
+      min={0}
+      max={data.stats.lastFrame}
+      setValue={e => setCurrentFrames(e)}
+      value={currentFrames}
+      marks={data.stats.stocks.map(stock => {
+        return [stock.endFrame, `Player ${stock.playerIndex} dies`];
+      })}
+      bands={data.stats.conversions.map(conversion => {
+        return [
+          [conversion.startFrame, conversion.endFrame],
+          conversion.playerIndex,
+        ];
+      })}
+      frame={frame}
+    />
+  );
+
+  const player = (player, opponent) => (
+    <>
+      <InputDisplay
+        frame={
+          frame == null
+            ? null
+            : frame in data.frames
+            ? data.frames[frame].players[player].pre
+            : null
+        }
+      />
+      <PlayerInfo
+        setFrame={setFrame}
+        frames={data.frames}
+        metadata={data.metadata}
+        playerIndex={player}
+        opponentIndex={opponent}
+        stats={data.stats}
+      />
+    </>
+  );
+
   return (
     <div
       style={{
@@ -84,25 +125,6 @@ export default function Home() {
     >
       <div style={{ display: 'flex' }}>
         <div>
-          <InputDisplay
-            frame={
-              frame == null
-                ? null
-                : frame in data.frames
-                ? data.frames[frame].players[playerIds[0]].pre
-                : null
-            }
-          />
-          <PlayerInfo
-            setFrame={setFrame}
-            frames={data.frames}
-            metadata={data.metadata}
-            playerIndex={playerIds[0]}
-            opponentIndex={playerIds[1]}
-            stats={data.stats}
-          />
-        </div>
-        <div>
           <GameInfo settings={data.settings} />
           <Map
             data={origData}
@@ -112,23 +134,12 @@ export default function Home() {
           />
         </div>
         <div>
-          <InputDisplay
-            frame={
-              frame == null
-                ? null
-                : frame in data.frames
-                ? data.frames[frame].players[playerIds[1]].pre
-                : null
-            }
-          />
-          <PlayerInfo
-            setFrame={setFrame}
-            frames={data.frames}
-            metadata={data.metadata}
-            playerIndex={playerIds[1]}
-            opponentIndex={playerIds[0]}
-            stats={data.stats}
-          />
+          <div style={{ display: 'flex' }}>
+            {player(playerIds[0], playerIds[1])}
+          </div>
+          <div style={{ display: 'flex' }}>
+            {player(playerIds[1], playerIds[0])}
+          </div>
         </div>
       </div>
       {/* <p>
@@ -144,24 +155,7 @@ export default function Home() {
           width: `80%`,
         }}
       >
-        <div style={{ position: 'relative' }}>
-          <Brush
-            min={0}
-            max={data.stats.lastFrame}
-            setValue={e => setCurrentFrames(e)}
-            value={currentFrames}
-            marks={data.stats.stocks.map(stock => {
-              return [stock.endFrame, `Player ${stock.playerIndex} dies`];
-            })}
-            bands={data.stats.conversions.map(conversion => {
-              return [
-                [conversion.startFrame, conversion.endFrame],
-                conversion.playerIndex,
-              ];
-            })}
-            frame={frame}
-          />
-        </div>
+        <div style={{ position: 'relative' }}>{brush}</div>
         <Line data={percents} frame={frame} setFrame={setFrame} />
         <Line data={inputs} frame={frame} setFrame={setFrame} />
         <Line data={distances} frame={frame} setFrame={setFrame} />
