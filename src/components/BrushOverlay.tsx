@@ -19,11 +19,9 @@ const BrushOverlay = ({ min, max, value }: Props) => {
 
   useEffect(() => {
     const marker = d3.select(ref.current);
-    console.log(marker.node());
     if (value == null) {
       marker.style('visibility', 'hidden');
     } else {
-      console.log(`translateX(${scale.current(value)}%)`);
       marker
         .style('visibility', 'visible')
         .style('left', `calc(${scale.current(value)}% - 2px)`);

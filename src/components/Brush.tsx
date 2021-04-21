@@ -212,7 +212,6 @@ const Brush = (props: Props) => {
     const out = slider(props.min, props.max);
     sliderEl = out[0];
     updateSlider.current = out[1];
-    console.log('hi');
 
     sliderEl.addEventListener('input', e => {
       const val = (sliderEl as SVGElementWithValue).value;
@@ -248,8 +247,6 @@ const Brush = (props: Props) => {
   }, [props.frame]);
 
   useEffect(() => {
-    console.log(oldVal.current);
-    console.log(props.value);
     if (
       updateSlider.current != null &&
       JSON.stringify(oldVal.current) !== JSON.stringify(props.value)
