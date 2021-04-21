@@ -31,8 +31,6 @@ const PlayerInfo = ({
   opponentIndex,
   setFrame,
 }: Props) => {
-  const chars = metadata.players[playerIndex].characters;
-
   const techs = getTechOptions(frames, playerIndex, opponentIndex);
   const techTooltipText = (d: IndividualData) => {
     return `${TECH_OPTIONS[d.data]}: ${d.sectionTotal}\n${d.frameIdx}`;

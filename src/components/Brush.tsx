@@ -1,5 +1,6 @@
 import * as d3 from 'd3';
 import React, { useEffect, useRef } from 'react';
+import { frameCountToGameTime } from '../util/calc';
 
 interface Props {
   min: number;
@@ -197,16 +198,30 @@ const Brush = (props: Props) => {
     // select entire range
     gBrush.call(brush.move, range.map(x));
 
-    return svg.node();
+    const selfUpdate = val => {
+      gBrush.call(brush.move, val.map(x));
+    };
+
+    return [svg.node(), selfUpdate];
   };
 
   let sliderEl: SVGSVGElement;
+  let updateSlider = useRef(null);
+  let oldVal = useRef<typeof props.value>(null);
   useEffect(() => {
-    sliderEl = slider(props.min, props.max);
+    const out = slider(props.min, props.max);
+    sliderEl = out[0];
+    updateSlider.current = out[1];
+    console.log('hi');
 
     sliderEl.addEventListener('input', e => {
       const val = (sliderEl as SVGElementWithValue).value;
-      props.setValue([Math.round(val[0]), Math.round(val[1])]);
+      const rounded: [number, number] = [
+        Math.round(val[0]),
+        Math.round(val[1]),
+      ];
+      oldVal.current = rounded;
+      props.setValue(rounded);
     });
   }, []);
 
@@ -217,10 +232,10 @@ const Brush = (props: Props) => {
       .range([0, 100])
   );
 
-  const ref = useRef(null);
+  const markerRef = useRef(null);
 
   useEffect(() => {
-    const marker = d3.select(ref.current);
+    const marker = d3.select(markerRef.current);
 
     if (props.frame == null) {
       marker.style('visibility', 'hidden');
@@ -228,8 +243,19 @@ const Brush = (props: Props) => {
       marker
         .style('visibility', 'visible')
         .style('left', `calc(${scale.current(props.frame)}% - 1px)`);
+      marker.select('p').text(frameCountToGameTime(props.frame));
     }
   }, [props.frame]);
+
+  useEffect(() => {
+    console.log(oldVal.current);
+    console.log(props.value);
+    if (
+      updateSlider.current != null &&
+      JSON.stringify(oldVal.current) !== JSON.stringify(props.value)
+    )
+      updateSlider.current(props.value);
+  }, [props.value]);
 
   return (
     <div
@@ -243,7 +269,7 @@ const Brush = (props: Props) => {
       }}
     >
       <div
-        ref={ref}
+        ref={markerRef}
         className="marker"
         style={{
           zIndex: 10,
@@ -253,7 +279,17 @@ const Brush = (props: Props) => {
           position: 'absolute',
           top: 0,
         }}
-      />
+      >
+        <p
+          style={{
+            position: 'absolute',
+            top: 50,
+            left: `50%`,
+            margin: 0,
+            fontSize: '12px',
+          }}
+        ></p>
+      </div>
       {sliderEl}
     </div>
   );

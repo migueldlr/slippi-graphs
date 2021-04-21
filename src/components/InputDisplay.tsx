@@ -241,8 +241,7 @@ const InputDisplay = ({ frame: initFrame }: Props) => {
         </div>
       </div>
       <div>
-        <p>
-          {actionStateId == -1 ? null : actionStateId}{' '}
+        <p style={{ marginTop: 0 }}>
           {action == null ? (
             <>&nbsp;</>
           ) : action.notes.length > 0 ? (

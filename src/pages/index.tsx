@@ -14,6 +14,7 @@ import {
   getPercents,
 } from '../util/calc';
 import GameInfo from '../components/GameInfo';
+import PlayerInfo from '../components/PlayerInfo';
 
 export default function Home() {
   const [origData, setOrigData] = useState<Data | null>(null);
@@ -93,15 +94,24 @@ export default function Home() {
 
   const player = (player, opponent) => (
     <>
-      <InputDisplay
-        frame={
-          frame == null
-            ? null
-            : frame in data.frames
-            ? data.frames[frame].players[player].pre
-            : null
-        }
-      />
+      <div>
+        <PlayerInfo
+          playerIndex={player}
+          stats={data.stats}
+          settings={data.settings}
+          metadata={data.metadata}
+          setCurrentFrames={setCurrentFrames}
+        />
+        <InputDisplay
+          frame={
+            frame == null
+              ? null
+              : frame in data.frames
+              ? data.frames[frame].players[player].pre
+              : null
+          }
+        />
+      </div>
       <PlayerStats
         setFrame={setFrame}
         frames={data.frames}
@@ -142,20 +152,16 @@ export default function Home() {
           </div>
         </div>
       </div>
-      {/* <p>
-        {frame ?? 'no frame'} -{' '}
-        {frame != null ? frameCountToGameTime(frame) : 0} -{' '}
-        {JSON.stringify(currentFrames)} -{' '}
-        {`[${frameCountToGameTime(currentFrames[0])}, ${frameCountToGameTime(
-          currentFrames[1]
-        )}]`}
-      </p> */}
       <div
         style={{
           width: `80%`,
         }}
       >
         <div style={{ position: 'relative' }}>{brush}</div>
+        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+          <p className="subtitle">{frameCountToGameTime(currentFrames[0])}</p>
+          <p className="subtitle">{frameCountToGameTime(currentFrames[1])}</p>
+        </div>
         <Line
           title="Percent"
           data={percents}
@@ -173,7 +179,7 @@ export default function Home() {
           frame={frame}
           setFrame={setFrame}
           tooltipText={(frame, data) => {
-            return `Player ${data[0][0] + 1}: ${data[0][1]}%\nPlayer ${
+            return `Player ${data[0][0] + 1}: ${data[0][1]}\nPlayer ${
               data[1][0] + 1
             }: ${data[1][1]}`;
           }}

@@ -39,6 +39,22 @@ a {
   fill: rgb(5, 156, 0);
 }
 
+div.p0 {
+  background-color: rgb(255, 0, 0);
+}
+
+div.p1 {
+  background-color: rgb(17, 0, 255);
+}
+
+div.p2 {
+  background-color: rgb(219, 209, 70);
+}
+
+div.p3 {
+  background-color: rgb(5, 156, 0);
+}
+
 .line.p0 {
   fill: none;
   stroke: rgb(255, 0, 0);
@@ -121,4 +137,9 @@ input[type='range'] {
 .subtitle {
   margin: 0;
   font-size: 12px;
+}
+
+.title {
+  margin: 0;
+  font-size: 16px;
 }
