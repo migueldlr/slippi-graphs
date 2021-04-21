@@ -34,4 +34,37 @@ const CHARACTER_IDS = {
   '32': 'Sandbag',
 };
 
-export { CHARACTER_IDS };
+const STAGE_IDS = {
+  2: 'Fountain of Dreams',
+  3: 'Pokemon Stadium',
+  4: 'Peachs Castle',
+  5: 'Kongo Jungle',
+  6: 'Brinstar',
+  7: 'Corneria',
+  8: 'Yoshis Story',
+  9: 'Onett',
+  10: 'Mute City',
+  11: 'Rainbow Cruise',
+  12: 'Jungle Japes',
+  13: 'Great Bay',
+  14: 'Hyrule Temple',
+  15: 'Brinstar Depths',
+  16: 'Yoshis Island',
+  17: 'Green Greens',
+  18: 'Fourside',
+  19: 'Mushroom Kingdom',
+  20: 'Mushroom Kingdom 2',
+  22: 'Venom',
+  23: 'Poke Floats',
+  24: 'Big Blue',
+  25: 'Icicle Mountain',
+  26: 'Icetop',
+  27: 'Flat Zone',
+  28: 'Dreamland',
+  29: 'Yoshis Island N64',
+  30: 'Kongo Jungle N64',
+  31: 'Battlefield',
+  32: 'Final Destination',
+};
+
+export { CHARACTER_IDS, STAGE_IDS };

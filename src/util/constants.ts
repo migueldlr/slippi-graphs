@@ -1,1 +1,1 @@
-export const TECH_OPTIONS = ['MISSED', 'IN_PLACE', 'IN', 'AWAY', 'WALL'];
+export const TECH_OPTIONS = ['Missed', 'In-Place', 'In', 'Away', 'Wall'];

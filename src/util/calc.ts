@@ -1,5 +1,4 @@
 import { FramesType, MetadataType } from '@slippi/slippi-js';
-import { PlayerInput } from '@slippi/slippi-js/dist/stats/inputs';
 import { Data, FrameID, InputsType, PlayerID, Tech } from './types';
 
 export const getPositions = (frames: FramesType, playerId = 0) => {
@@ -95,7 +94,6 @@ export const getTechOptions = (
     [Tech.MISSED]: 0,
     [Tech.IN]: 0,
     [Tech.AWAY]: 0,
-    [Tech.WALL]: 0,
   };
 
   for (let frame in frames) {
@@ -166,4 +164,29 @@ export const frameCountToGameTime = (frame: number) => {
   )
     .toString()
     .padEnd(2, '0')}`;
+};
+
+export const distanceBetween = (
+  frames: FramesType,
+  currentFrames: [number, number]
+) => {
+  const out: [number, number][] = [];
+
+  let playerIds: number[];
+  for (let x in frames) {
+    playerIds = Object.keys(frames[x].players).map(x => +x);
+    break;
+  }
+
+  for (let i = currentFrames[0]; i < currentFrames[1]; i++) {
+    const { players } = frames[i];
+    const { positionX: p1x, positionY: p1y } = players[playerIds[0]].pre;
+    const { positionX: p2x, positionY: p2y } = players[playerIds[1]].pre;
+
+    out.push([+i, Math.hypot(p1x - p2x, p1y - p2y)]);
+  }
+
+  console.log(out);
+
+  return out;
 };

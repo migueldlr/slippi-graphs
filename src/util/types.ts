@@ -35,7 +35,6 @@ export enum Tech {
   IN_PLACE,
   IN,
   AWAY,
-  WALL,
 }
 
 export interface Data {

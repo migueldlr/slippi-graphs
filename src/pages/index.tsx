@@ -7,11 +7,13 @@ import { Data, FlatData } from '../util/types';
 import InputDisplay from '../components/InputDisplay';
 import PlayerInfo from '../components/PlayerInfo';
 import {
+  distanceBetween,
   filterData,
   frameCountToGameTime,
   getAPM,
   getPercents,
 } from '../util/calc';
+import GameInfo from '../components/GameInfo';
 
 export default function Home() {
   const [origData, setOrigData] = useState<Data | null>(null);
@@ -33,6 +35,7 @@ export default function Home() {
       setCurrentFrames([0, data.stats.lastFrame]);
       console.log(data.stats);
       console.log(data.metadata);
+      console.log(data.settings);
       console.log(Object.keys(data.frames).length);
       console.log(data.inputs);
     })();
@@ -44,6 +47,11 @@ export default function Home() {
   );
   const percents: FlatData | null = useMemo(
     () => (canCalc ? getPercents(origData.frames, currentFrames) : null),
+    [origData, currentFrames]
+  );
+  const distances: FlatData | null = useMemo(
+    () =>
+      canCalc ? { 5: distanceBetween(origData.frames, currentFrames) } : null,
     [origData, currentFrames]
   );
 
@@ -93,12 +101,15 @@ export default function Home() {
             }
           />
         </div>
-        <Map
-          data={origData}
-          currentFrames={currentFrames}
-          frame={frame}
-          setFrame={setFrame}
-        />
+        <div>
+          <GameInfo settings={data.settings} />
+          <Map
+            data={origData}
+            currentFrames={currentFrames}
+            frame={frame}
+            setFrame={setFrame}
+          />
+        </div>
         <div>
           <PlayerInfo
             frames={data.frames}
@@ -118,25 +129,20 @@ export default function Home() {
           />
         </div>
       </div>
-      <p>
+      {/* <p>
         {frame ?? 'no frame'} -{' '}
         {frame != null ? frameCountToGameTime(frame) : 0} -{' '}
         {JSON.stringify(currentFrames)} -{' '}
         {`[${frameCountToGameTime(currentFrames[0])}, ${frameCountToGameTime(
           currentFrames[1]
         )}]`}
-      </p>
+      </p> */}
       <div
         style={{
           width: `80%`,
         }}
       >
         <div style={{ position: 'relative' }}>
-          {/* <div
-            style={{ position: 'absolute', top: 0, width: '100%', zIndex: -1 }}
-          >
-            <BrushOverlay min={0} max={data.stats.lastFrame} value={frame} />
-          </div> */}
           <Brush
             min={0}
             max={data.stats.lastFrame}
@@ -156,6 +162,7 @@ export default function Home() {
         </div>
         <Line data={percents} frame={frame} setFrame={setFrame} />
         <Line data={inputs} frame={frame} setFrame={setFrame} />
+        <Line data={distances} frame={frame} setFrame={setFrame} />
       </div>
     </div>
   );

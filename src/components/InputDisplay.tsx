@@ -205,16 +205,16 @@ const InputDisplay = ({ frame: initFrame }: Props) => {
           backgroundColor: 'black',
         }}
       >
-        <div className="inputbutton" style={{ left: 10, top: 10 }}>
+        <div className="inputbutton" style={{ left: 25, top: 10 }}>
           {lButton}
         </div>
-        <div className="inputbutton" style={{ left: 10, top: 50 }}>
+        <div className="inputbutton" style={{ left: 20, top: 50 }}>
           {joystick}
         </div>
-        <div className="inputbutton" style={{ left: 160, top: 10 }}>
+        <div className="inputbutton" style={{ left: 185, top: 10 }}>
           {rButton}
         </div>
-        <div className="inputbutton" style={{ left: 160, top: 50 }}>
+        <div className="inputbutton" style={{ left: 180, top: 50 }}>
           {cstick}
         </div>
         <div className="inputbutton" style={{ left: 330, top: 40 }}>
