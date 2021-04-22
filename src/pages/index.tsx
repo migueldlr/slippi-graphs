@@ -122,9 +122,12 @@ export default function Home() {
   if (loadState === LoadState.IDLE) {
     return (
       <div className="container">
-        <div {...getRootProps({ className: 'dropzone' })}>
+        <div
+          {...getRootProps({ className: 'dropzone' })}
+          style={{ backgroundColor: '#EBEBEB', padding: '20px' }}
+        >
           <input {...getInputProps()} />
-          <p>Drag a .slp file here!</p>
+          <p style={{ margin: 0 }}>🐸 Drag a .slp file here 🐸</p>
         </div>
         <div>
           {acceptedFiles.map(file => (
