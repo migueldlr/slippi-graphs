@@ -11,12 +11,7 @@ interface Props {
   setCurrentFrames: React.Dispatch<React.SetStateAction<[number, number]>>;
 }
 
-type PlayerData = MetadataType['players'][0] & {
-  names?: {
-    netplay: string;
-    code: string;
-  };
-};
+type PlayerData = MetadataType['players'][0];
 
 const PlayerInfo = ({
   metadata,

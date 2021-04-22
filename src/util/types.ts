@@ -44,3 +44,10 @@ export interface Data {
   settings: GameStartType;
   inputs: InputsType;
 }
+
+export enum LoadState {
+  IDLE,
+  LOADING,
+  SUCCESS,
+  ERROR,
+}

@@ -1,9 +1,9 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import Brush from '../components/Brush';
 import Line from '../components/Line';
 import Map from '../components/Map';
-import { Data, FlatData } from '../util/types';
+import { Data, FlatData, LoadState } from '../util/types';
 import InputDisplay from '../components/InputDisplay';
 import PlayerStats from '../components/PlayerStats';
 import {
@@ -15,8 +15,11 @@ import {
 } from '../util/calc';
 import GameInfo from '../components/GameInfo';
 import PlayerInfo from '../components/PlayerInfo';
+import { useDropzone } from 'react-dropzone';
+import { fetch_retry } from '../util/util';
 
 export default function Home() {
+  const [loadState, setLoadState] = useState<LoadState>(LoadState.IDLE);
   const [origData, setOrigData] = useState<Data | null>(null);
 
   const [currentFrames, setCurrentFrames] = useState<[number, number]>(null);
@@ -28,19 +31,27 @@ export default function Home() {
 
   const [frame, setFrame] = useState<number>();
 
-  useEffect(() => {
-    (async () => {
-      const response = await fetch('/api/game');
-      const data: Data = await response.json();
-      setOrigData(data);
-      setCurrentFrames([0, data.stats.lastFrame]);
-      console.log(data.stats);
-      console.log(data.metadata);
-      console.log(data.settings);
-      console.log(data.frames[0]);
-      console.log(data.inputs);
-    })();
-  }, []);
+  // useEffect(() => {
+  //   (async () => {
+  //     const response = await fetch('/api/game');
+  //     const data: Data = await response.json();
+  //     // console.log(JSON.stringify(data.frames).length);
+  //     for (let key in data) {
+  //       console.log(`${key}: ${JSON.stringify(data[key]).length}`);
+  //     }
+  //     setOrigData(data);
+  //     setCurrentFrames([0, data.stats.lastFrame]);
+  //     console.log(data.stats);
+  //     console.log(data.metadata);
+  //     console.log(data.settings);
+  //     console.log(data.frames[0]);
+  //     console.log(data.inputs);
+  //   })();
+  // }, []);
+
+  // useEffect(() => {
+
+  // }, []);
 
   const inputs: FlatData | null = useMemo(
     () => (canCalc ? getAPM(origData.inputs, currentFrames) : null),
@@ -56,17 +67,86 @@ export default function Home() {
     [origData, currentFrames]
   );
 
-  if (data == null) {
+  const onDrop = useCallback((acceptedFiles: File[]) => {
+    // const formData = new FormData();
+
+    // formData.append('file', acceptedFiles[0]);
+
+    (async () => {
+      setLoadState(LoadState.LOADING);
+      let urlRes;
+      try {
+        urlRes = await fetch(process.env.NEXT_PUBLIC_AWS_LAMBDA_URL);
+      } catch (e) {
+        setLoadState(LoadState.ERROR);
+        return;
+      }
+
+      const { uploadURL } = await urlRes.json();
+      await fetch(uploadURL, {
+        method: 'PUT',
+        body: acceptedFiles[0],
+        headers: {
+          'Content-Type': '.slp',
+        },
+      });
+
+      const url = uploadURL
+        .split('?')[0]
+        .replace('.slp', '.json')
+        .replace('melee-vis-data', 'melee-vis-data-parsed');
+
+      try {
+        const res2 = await fetch_retry(5, url);
+        const data: Data = await res2.json();
+        setOrigData(data);
+        setCurrentFrames([0, data.stats.lastFrame]);
+        setLoadState(LoadState.SUCCESS);
+      } catch (e) {
+        setLoadState(LoadState.ERROR);
+      }
+    })();
+  }, []);
+
+  const {
+    acceptedFiles,
+    fileRejections,
+    getRootProps,
+    getInputProps,
+  } = useDropzone({
+    onDrop,
+    accept: '.slp',
+    maxFiles: 1,
+  });
+
+  if (loadState === LoadState.IDLE) {
     return (
-      <div
-        style={{
-          display: `flex`,
-          flexDirection: `column`,
-          alignItems: `center`,
-        }}
-        className="container"
-      >
-        Loading frames...
+      <div className="container">
+        <div {...getRootProps({ className: 'dropzone' })}>
+          <input {...getInputProps()} />
+          <p>Drag a .slp file here!</p>
+        </div>
+        <div>
+          {acceptedFiles.map(file => (
+            <p>{file.name}</p>
+          ))}
+        </div>
+      </div>
+    );
+  }
+
+  if (loadState === LoadState.LOADING) {
+    return (
+      <div className="container">
+        <p>Loading...</p>
+      </div>
+    );
+  }
+
+  if (loadState === LoadState.ERROR) {
+    return (
+      <div className="container">
+        <p>Couldn't process your file 😢</p>
       </div>
     );
   }
@@ -131,7 +211,6 @@ export default function Home() {
         alignItems: `center`,
         padding: `20px 0`,
       }}
-      className="container"
     >
       <div style={{ display: 'flex' }}>
         <div>

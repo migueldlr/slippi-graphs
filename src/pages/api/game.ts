@@ -2,15 +2,13 @@ import fs from 'fs';
 import path from 'path';
 
 import {
-  default as SlippiGame,
+  SlippiGame,
   Frames,
   FramesType,
   GameStartType,
-  getSinglesPlayerPermutationsFromSettings,
   InputComputer,
   StatsType,
 } from '@slippi/slippi-js';
-import { PlayerInput } from '@slippi/slippi-js/dist/stats/inputs';
 import { InputsType } from '../../util/types';
 
 const getInputs = (
@@ -18,9 +16,9 @@ const getInputs = (
   frames: FramesType,
   stats: StatsType
 ): InputsType => {
-  const players = getSinglesPlayerPermutationsFromSettings(settings);
+  const players = settings.players;
   const inputComputer = new InputComputer();
-  inputComputer.setPlayerPermutations(players);
+  inputComputer.setup(settings);
   const inputFrames: InputsType = {};
   players.forEach(id => (inputFrames[id.playerIndex] = []));
   for (let frame in frames) {

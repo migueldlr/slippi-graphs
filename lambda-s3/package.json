@@ -1,0 +1,9 @@
+{
+  "name": "lambda-s3",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "dependencies": {
+    "@slippi/slippi-js": "^6.0.1"
+  }
+}
