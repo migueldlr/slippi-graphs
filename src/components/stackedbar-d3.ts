@@ -55,8 +55,8 @@ export default class StackedBarD3 {
       .style('grid-template-columns', `repeat(${total}, 1fr)`);
 
     const bars = this.container
-      .select('.bars')
-      .selectAll('.bar')
+      .select<HTMLDivElement>('.bars')
+      .selectAll<HTMLDivElement, typeof flatData>('.bar')
       .data(flatData);
 
     const barsEnter = bars

@@ -86,8 +86,8 @@ export default class LineD3 {
 
     // set up lines
     const lines = svg
-      .select('.lines')
-      .selectAll('.line')
+      .select<SVGGElement>('.lines')
+      .selectAll<SVGPathElement, typeof dataArr[0]>('.line')
       .data(dataArr, d => d[0]);
 
     const linesEnter = lines
@@ -102,9 +102,9 @@ export default class LineD3 {
 
     // set up dots
     const dots = svg
-      .select('.marker')
-      .select('.dots')
-      .selectAll('.line-marker-dot')
+      .select<SVGGElement>('.marker')
+      .select<SVGGElement>('.dots')
+      .selectAll<SVGCircleElement, typeof dataArr>('.line-marker-dot')
       .data(dataArr);
 
     const dotsEnter = dots

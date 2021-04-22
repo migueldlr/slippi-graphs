@@ -39,7 +39,11 @@ export default class BarD3 {
     const barHeight = height / this.data.length;
 
     const axisMax = d3.max(this.data.map(d => d[1]));
-    const bars = svg.select('g.bars').selectAll('.bar').data(this.data);
+    const { data } = this;
+    const bars = svg
+      .select<SVGGElement>('g.bars')
+      .selectAll<SVGRectElement, typeof data>('.bar')
+      .data(this.data);
 
     const barsEnter = bars
       .enter()

@@ -18,7 +18,10 @@ interface SVGElementWithValue extends SVGSVGElement {
 
 const Brush = (props: Props) => {
   const px = 0;
-  const slider = function (min: number, max: number) {
+  const slider = function (
+    min: number,
+    max: number
+  ): [SVGSVGElement, (val: number[]) => void] {
     const range = [min, max];
 
     // get container width/height
@@ -198,7 +201,7 @@ const Brush = (props: Props) => {
     // select entire range
     gBrush.call(brush.move, range.map(x));
 
-    const selfUpdate = val => {
+    const selfUpdate = (val: number[]) => {
       gBrush.call(brush.move, val.map(x));
     };
 
