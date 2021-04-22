@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
+import Head from 'next/head';
 
 import Brush from '../components/Brush';
 import Line from '../components/Line';
@@ -119,9 +120,16 @@ export default function Home() {
     maxFiles: 1,
   });
 
+  const head = (
+    <Head>
+      <title>Melee Visualization</title>
+    </Head>
+  );
+
   if (loadState === LoadState.IDLE) {
     return (
       <div className="container">
+        {head}
         <div
           {...getRootProps({ className: 'dropzone' })}
           style={{ backgroundColor: '#EBEBEB', padding: '20px' }}
@@ -141,6 +149,7 @@ export default function Home() {
   if (loadState === LoadState.LOADING) {
     return (
       <div className="container">
+        {head}
         <p>Loading...</p>
       </div>
     );
@@ -149,6 +158,7 @@ export default function Home() {
   if (loadState === LoadState.ERROR) {
     return (
       <div className="container">
+        {head}
         <p>Couldn't process your file 😢</p>
       </div>
     );
@@ -215,6 +225,7 @@ export default function Home() {
         padding: `20px 0`,
       }}
     >
+      {head}
       <div style={{ display: 'flex' }}>
         <div>
           <GameInfo settings={data.settings} />
