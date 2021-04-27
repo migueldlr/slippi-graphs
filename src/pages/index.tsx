@@ -32,23 +32,28 @@ export default function Home() {
 
   const [frame, setFrame] = useState<number>();
 
-  // useEffect(() => {
-  //   (async () => {
-  //     const response = await fetch('/api/game');
-  //     const data: Data = await response.json();
-  //     // console.log(JSON.stringify(data.frames).length);
-  //     for (let key in data) {
-  //       console.log(`${key}: ${JSON.stringify(data[key]).length}`);
-  //     }
-  //     setOrigData(data);
-  //     setCurrentFrames([0, data.stats.lastFrame]);
-  //     console.log(data.stats);
-  //     console.log(data.metadata);
-  //     console.log(data.settings);
-  //     console.log(data.frames[0]);
-  //     console.log(data.inputs);
-  //   })();
-  // }, []);
+  useEffect(() => {
+    if (process.env.NODE_ENV === 'development') {
+      console.log(process.env.NODE_ENV);
+      (async () => {
+        setLoadState(LoadState.LOADING);
+        const response = await fetch('/api/game');
+        const data: Data = await response.json();
+        // console.log(JSON.stringify(data.frames).length);
+        for (let key in data) {
+          console.log(`${key}: ${JSON.stringify(data[key]).length}`);
+        }
+        setOrigData(data);
+        setCurrentFrames([0, data.stats.lastFrame]);
+        console.log(data.stats);
+        console.log(data.metadata);
+        console.log(data.settings);
+        console.log(data.frames[0]);
+        console.log(data.inputs);
+        setLoadState(LoadState.SUCCESS);
+      })();
+    }
+  }, []);
 
   // useEffect(() => {
 

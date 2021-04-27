@@ -191,7 +191,7 @@ export function countConversionStarts(
     if (
       conversion.openingType !== type ||
       !(move.frame in frames) ||
-      conversion.playerIndex != playerId
+      move.playerIndex != playerId
     ) {
       continue;
     }
