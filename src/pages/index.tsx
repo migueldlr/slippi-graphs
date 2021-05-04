@@ -87,14 +87,13 @@ export default function Home() {
             <p>{file.name}</p>
           ))}
         </div>
-        <br />
-        <button
+        {/* <button
           onClick={() => {
             router.push('/game/1');
           }}
         >
           No slippi files? Click here for a demo
-        </button>
+        </button> */}
         <br />
         <Link href="/about">About</Link>
       </div>
