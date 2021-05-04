@@ -6,9 +6,9 @@ export const fetch_retry = async (
   let error;
   for (let i = 0; i < n; i++) {
     try {
-      console.log('trying!');
+      // console.log('trying!');
       const res = await fetch(url, options);
-      console.log(res);
+      // console.log(res);
       if (res.ok) {
         return res;
       }

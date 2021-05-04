@@ -19,7 +19,7 @@ function useActionStates() {
           },
         ])
       );
-      console.log(JSON.stringify(parsed));
+      // console.log(JSON.stringify(parsed));
       setActionStates(parsed);
     })();
   }, []);

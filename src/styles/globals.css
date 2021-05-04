@@ -151,3 +151,12 @@ input[type='range'] {
   align-items: center;
   justify-content: center;
 }
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}

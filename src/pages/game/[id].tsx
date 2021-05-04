@@ -18,6 +18,7 @@ import PlayerInfo from '../../components/PlayerInfo';
 import PlayerStats from '../../components/PlayerStats';
 import Head from 'next/head';
 import { CHARACTER_DATA } from '../../util/ids';
+import Spinner from '../../components/Spinner';
 
 const Game = () => {
   const [loadState, setLoadState] = useState<LoadState>(LoadState.LOADING);
@@ -48,7 +49,7 @@ const Game = () => {
   );
 
   useEffect(() => {
-    console.log(router.query);
+    // console.log(router.query);
     if (!router.isReady) {
       return;
     }
@@ -84,7 +85,7 @@ const Game = () => {
         <Head>
           <title>Slippi Graphs</title>
         </Head>
-        <p>Loading...</p>
+        <Spinner />
       </div>
     );
   }
