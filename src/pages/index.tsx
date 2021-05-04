@@ -5,6 +5,7 @@ import { LoadState } from '../util/types';
 import { useDropzone } from 'react-dropzone';
 import { useRouter } from 'next/router';
 import Spinner from '../components/Spinner';
+import Link from 'next/link';
 
 export default function Home() {
   const [loadState, setLoadState] = useState<LoadState>(LoadState.IDLE);
@@ -12,7 +13,10 @@ export default function Home() {
   const router = useRouter();
 
   useEffect(() => {
-    if (process.env.NODE_ENV === 'development') {
+    if (
+      process.env.NODE_ENV === 'development' &&
+      process.env.NEXT_DEV_DEFAULT_GAME != null
+    ) {
       router.push('/game/1');
     }
   }, []);
@@ -91,6 +95,8 @@ export default function Home() {
         >
           No slippi files? Click here for a demo
         </button>
+        <br />
+        <Link href="/about">About</Link>
       </div>
     );
   }
