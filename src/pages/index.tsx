@@ -1,39 +1,24 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import Head from 'next/head';
 
-import Brush from '../components/Brush';
-import Line from '../components/Line';
-import Map from '../components/Map';
-import { Data, FlatData, LoadState } from '../util/types';
-import InputDisplay from '../components/InputDisplay';
-import PlayerStats from '../components/PlayerStats';
-import {
-  distanceBetween,
-  filterData,
-  frameCountToGameTime,
-  getAPM,
-  getPercents,
-} from '../util/calc';
-import GameInfo from '../components/GameInfo';
-import PlayerInfo from '../components/PlayerInfo';
+import { Data, LoadState } from '../util/types';
 import { useDropzone } from 'react-dropzone';
 import { fetch_retry } from '../util/util';
+import { useRouter } from 'next/router';
 
 export default function Home() {
   const [loadState, setLoadState] = useState<LoadState>(LoadState.IDLE);
   const [origData, setOrigData] = useState<Data | null>(null);
 
   const [currentFrames, setCurrentFrames] = useState<[number, number]>(null);
-  const canCalc = origData != null && currentFrames != null;
-  const data = useMemo(
-    () => (canCalc ? filterData(origData, currentFrames) : null),
-    [origData, currentFrames]
-  );
 
-  const [frame, setFrame] = useState<number>();
+  const router = useRouter();
 
   useEffect(() => {
-    if (process.env.NODE_ENV === 'development') {
+    if (
+      process.env.NODE_ENV === 'development' &&
+      process.env.NEXT_USE_TEST_GAME != null
+    ) {
       console.log(process.env.NODE_ENV);
       (async () => {
         setLoadState(LoadState.LOADING);
@@ -59,25 +44,7 @@ export default function Home() {
 
   // }, []);
 
-  const inputs: FlatData | null = useMemo(
-    () => (canCalc ? getAPM(origData.inputs, currentFrames) : null),
-    [origData, currentFrames]
-  );
-  const percents: FlatData | null = useMemo(
-    () => (canCalc ? getPercents(origData.frames, currentFrames) : null),
-    [origData, currentFrames]
-  );
-  const distances: FlatData | null = useMemo(
-    () =>
-      canCalc ? { 5: distanceBetween(origData.frames, currentFrames) } : null,
-    [origData, currentFrames]
-  );
-
   const onDrop = useCallback((acceptedFiles: File[]) => {
-    // const formData = new FormData();
-
-    // formData.append('file', acceptedFiles[0]);
-
     (async () => {
       setLoadState(LoadState.LOADING);
       let urlRes;
@@ -97,10 +64,17 @@ export default function Home() {
         },
       });
 
+      console.log(uploadURL);
+
       const url = uploadURL
         .split('?')[0]
         .replace('.slp', '.json')
         .replace('melee-vis-data', 'melee-vis-data-parsed');
+
+      const id = url.match(/(\d+)\.json/)[1];
+      console.log(id);
+
+      router.push(`/game/${id}`);
 
       try {
         const res2 = await fetch_retry(5, url);
@@ -114,12 +88,7 @@ export default function Home() {
     })();
   }, []);
 
-  const {
-    acceptedFiles,
-    fileRejections,
-    getRootProps,
-    getInputProps,
-  } = useDropzone({
+  const { acceptedFiles, getRootProps, getInputProps } = useDropzone({
     onDrop,
     accept: '.slp',
     maxFiles: 1,
@@ -127,7 +96,7 @@ export default function Home() {
 
   const head = (
     <Head>
-      <title>Melee Visualization</title>
+      <title>Slippi Graphs</title>
     </Head>
   );
 
@@ -135,6 +104,10 @@ export default function Home() {
     return (
       <div className="container">
         {head}
+        <h1>Slippi Graphs</h1>
+        <h3 style={{ fontWeight: 'normal', fontStyle: 'italic', marginTop: 0 }}>
+          the Slippi game visualizer you didn't know you didn't need
+        </h3>
         <div
           {...getRootProps({ className: 'dropzone' })}
           style={{ backgroundColor: '#EBEBEB', padding: '20px' }}
@@ -147,6 +120,14 @@ export default function Home() {
             <p>{file.name}</p>
           ))}
         </div>
+        <br />
+        <button
+          onClick={() => {
+            router.push('/game/1');
+          }}
+        >
+          No slippi files? Click here for a demo
+        </button>
       </div>
     );
   }
@@ -169,132 +150,10 @@ export default function Home() {
     );
   }
 
-  const playerIds = Object.keys(data.metadata.players).map(id => +id);
-
-  const brush = (
-    <Brush
-      min={0}
-      max={data.stats.lastFrame}
-      setValue={e => setCurrentFrames(e)}
-      value={currentFrames}
-      marks={data.stats.stocks.map(stock => {
-        return [stock.endFrame, `Player ${stock.playerIndex} dies`];
-      })}
-      bands={data.stats.conversions.map(conversion => {
-        return [
-          [conversion.startFrame, conversion.endFrame],
-          conversion.playerIndex,
-        ];
-      })}
-      frame={frame}
-    />
-  );
-
-  const player = (player, opponent) => (
-    <>
-      <div style={{ margin: '0px 5px' }}>
-        <PlayerInfo
-          playerIndex={player}
-          stats={data.stats}
-          settings={data.settings}
-          metadata={data.metadata}
-          setCurrentFrames={setCurrentFrames}
-        />
-        <InputDisplay
-          frame={
-            frame == null
-              ? null
-              : frame in data.frames
-              ? data.frames[frame].players[player].pre
-              : null
-          }
-        />
-      </div>
-      <PlayerStats
-        setFrame={setFrame}
-        frames={data.frames}
-        metadata={data.metadata}
-        playerIndex={player}
-        opponentIndex={opponent}
-        stats={data.stats}
-      />
-    </>
-  );
-
   return (
-    <div
-      style={{
-        display: `flex`,
-        flexDirection: `column`,
-        alignItems: `center`,
-        padding: `20px 0`,
-      }}
-    >
+    <div className="container">
       {head}
-      <div style={{ display: 'flex' }}>
-        <div>
-          <GameInfo settings={data.settings} />
-          <Map
-            data={origData}
-            currentFrames={currentFrames}
-            frame={frame}
-            setFrame={setFrame}
-          />
-        </div>
-        <div>
-          <div style={{ display: 'flex' }}>
-            {player(playerIds[0], playerIds[1])}
-          </div>
-          <div style={{ display: 'flex' }}>
-            {player(playerIds[1], playerIds[0])}
-          </div>
-        </div>
-      </div>
-      <div
-        style={{
-          width: `80%`,
-        }}
-      >
-        <div style={{ position: 'relative' }}>{brush}</div>
-        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-          <p className="subtitle">{frameCountToGameTime(currentFrames[0])}</p>
-          <p className="subtitle">{frameCountToGameTime(currentFrames[1])}</p>
-        </div>
-        <Line
-          title="Percent"
-          data={percents}
-          frame={frame}
-          setFrame={setFrame}
-          tooltipText={(frame, data) => {
-            if (data[0][1] == null) {
-              return '';
-            }
-            return `Player ${data[0][0] + 1}: ${data[0][1].toFixed(
-              1
-            )}%\nPlayer ${data[1][0] + 1}: ${data[1][1].toFixed(1)}%`;
-          }}
-        />
-        <Line
-          title="Actions per Second"
-          data={inputs}
-          frame={frame}
-          setFrame={setFrame}
-          tooltipText={(frame, data) => {
-            return `Player ${data[0][0] + 1}: ${data[0][1]}\nPlayer ${
-              data[1][0] + 1
-            }: ${data[1][1]}`;
-          }}
-        />
-        <Line
-          title="Distance between Players"
-          data={distances}
-          frame={frame}
-          setFrame={setFrame}
-          tooltipText={(frame, data) => {
-            return `${data[0][1]}`;
-          }}
-        />
-      </div>
+      <p>Not sure how you got here, but try refreshing 🤔</p>
     </div>
   );
 }
