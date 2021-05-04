@@ -30,6 +30,7 @@ const AboutPage = (props: Props) => {
         <a href="https://github.com/project-slippi/slippi-wiki/blob/master/SPEC.md">
           the Slippi Wiki
         </a>
+        .
       </p>
       <p>
         Not affiliated with <a href="http://slippi.gg/">Slippi</a> - please
