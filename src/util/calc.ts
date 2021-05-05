@@ -162,11 +162,21 @@ export const getShieldOptions = (
 
 export function countStates(
   frames: FramesType,
-  playerId: number
+  playerId: number,
+  unique?: boolean
 ): [number, number][] {
   const stateCounts: Record<number, number> = {};
   for (let frameId in frames) {
     const frame = frames[frameId].players[playerId].pre;
+    if (unique) {
+      if (!(+frameId - 1 in frames)) {
+        continue;
+      }
+      const prevFrame = frames[+frameId - 1].players[playerId].pre;
+      if (prevFrame.actionStateId === frame.actionStateId) {
+        continue;
+      }
+    }
     stateCounts[frame.actionStateId] =
       (stateCounts[frame.actionStateId] ?? 0) + 1;
   }

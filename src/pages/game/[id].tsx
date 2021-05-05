@@ -33,6 +33,7 @@ const Game = () => {
   );
 
   const [frame, setFrame] = useState<number>();
+  const [selectedPlayer, setSelectedPlayer] = useState<number>();
   const router = useRouter();
 
   const inputs: FlatData | null = useMemo(
@@ -132,6 +133,7 @@ const Game = () => {
           settings={data.settings}
           metadata={data.metadata}
           setCurrentFrames={setCurrentFrames}
+          setSelectedPlayer={setSelectedPlayer}
         />
         <InputDisplay
           frame={
@@ -190,6 +192,7 @@ const Game = () => {
             currentFrames={currentFrames}
             frame={frame}
             setFrame={setFrame}
+            selectedPlayer={selectedPlayer}
           />
         </div>
         <div>

@@ -9,6 +9,7 @@ interface Props {
   stats: StatsType;
   playerIndex: number;
   setCurrentFrames: React.Dispatch<React.SetStateAction<[number, number]>>;
+  setSelectedPlayer: React.Dispatch<React.SetStateAction<number>>;
 }
 
 type PlayerData = MetadataType['players'][0];
@@ -19,6 +20,7 @@ const PlayerInfo = ({
   stats,
   settings,
   setCurrentFrames,
+  setSelectedPlayer,
 }: Props) => {
   const player: PlayerData = metadata.players[playerIndex];
   const charId = +Object.keys(player.characters)[0];
@@ -44,7 +46,10 @@ const PlayerInfo = ({
   const stockIds = [0, 1, 2, 3];
 
   return (
-    <div>
+    <div
+      onMouseOver={() => setSelectedPlayer(playerIndex)}
+      onMouseLeave={() => setSelectedPlayer(null)}
+    >
       <div style={{ display: 'flex', alignItems: 'center' }}>
         <div
           style={{ height: `1em`, width: `1em`, marginRight: '2px' }}

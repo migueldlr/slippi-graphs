@@ -41,6 +41,7 @@ export default class HeatmapD3 {
   width: number;
   canvas: HTMLCanvasElement;
   height: number;
+  selectedPlayer: number;
 
   constructor(containerEl: HTMLDivElement, data) {
     this.fakeContainerEl = document.createElement('custom');
@@ -119,10 +120,19 @@ export default class HeatmapD3 {
         .attr('x', d => d.positionX)
         .attr('y', d => d.positionY);
     });
+    this.fakeContainer
+      .selectAll('.dot')
+      .sort((a: Position, b: Position) =>
+        d3.ascending(+a.frameIdx, +b.frameIdx)
+      )
+      .each((d, i, nodes) => {
+        const node = d3.select(nodes[i]);
+      });
   }
 
-  updateFrames(currentFrames: [number, number]) {
+  updateFrames(currentFrames: [number, number], selectedPlayer: number) {
     this.currentFrames = currentFrames;
+    this.selectedPlayer = selectedPlayer;
     this.redraw();
   }
 
@@ -158,8 +168,8 @@ export default class HeatmapD3 {
     }
     ctx.beginPath();
     ctx.arc(
-      round(+node.attr('x'), 1) + this.width / 2,
-      -round(+node.attr('y'), 1) + this.height / 2,
+      +node.attr('x') + this.width / 2,
+      -+node.attr('y') + this.height / 2,
       4,
       0,
       2 * Math.PI
@@ -172,7 +182,14 @@ export default class HeatmapD3 {
     this.clear(preserveFake);
     this.fakeContainer.selectAll(`.dot`).each((d, i, nodes) => {
       const node = d3.select(nodes[i]);
+      // console.log(node.attr('playerid'));
 
+      if (
+        this.selectedPlayer != null &&
+        +node.attr('playerid') != this.selectedPlayer
+      ) {
+        return;
+      }
       if (
         this.currentFrames[0] < +node.attr('frameIdx') &&
         +node.attr('frameIdx') < this.currentFrames[1]

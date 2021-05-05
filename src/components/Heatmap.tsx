@@ -19,11 +19,18 @@ interface Props {
   currentFrames: [number, number];
   frame?: number;
   setFrame: React.Dispatch<React.SetStateAction<number>>;
+  selectedPlayer: number;
 }
 
 let vis: HeatmapD3;
 
-const Map = ({ data, currentFrames, frame, setFrame }: Props) => {
+const Map = ({
+  data,
+  currentFrames,
+  frame,
+  setFrame,
+  selectedPlayer,
+}: Props) => {
   const ref = useRef(null);
 
   useEffect(() => {
@@ -31,8 +38,8 @@ const Map = ({ data, currentFrames, frame, setFrame }: Props) => {
   }, []);
 
   useEffect(() => {
-    vis.updateFrames(currentFrames);
-  }, [currentFrames]);
+    vis.updateFrames(currentFrames, selectedPlayer);
+  }, [currentFrames, selectedPlayer]);
 
   useEffect(() => {
     vis.updateFrame(frame);
