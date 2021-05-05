@@ -64,6 +64,7 @@ const Game = () => {
       try {
         const res2 = await fetch_retry(5, url);
         const data: Data = await res2.json();
+        console.log(data.stats);
         setOrigData(data);
         setCurrentFrames([0, data.stats.lastFrame]);
         setLoadState(LoadState.SUCCESS);
@@ -117,7 +118,7 @@ const Game = () => {
       bands={data.stats.conversions.map(conversion => {
         return [
           [conversion.startFrame, conversion.endFrame],
-          conversion.playerIndex,
+          conversion.moves[0].playerIndex,
         ];
       })}
       frame={frame}
@@ -146,6 +147,7 @@ const Game = () => {
         />
       </div>
       <PlayerStats
+        frame={frame}
         setFrame={setFrame}
         frames={data.frames}
         metadata={data.metadata}

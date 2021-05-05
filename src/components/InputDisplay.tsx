@@ -109,7 +109,7 @@ const InputDisplay = ({ frame: initFrame }: Props) => {
           width: '128px',
           height: '128px',
           position: 'absolute',
-          top: joystickScale(joystickY),
+          top: joystickScale(-joystickY),
           left: joystickScale(joystickX),
         }}
       >
@@ -140,7 +140,7 @@ const InputDisplay = ({ frame: initFrame }: Props) => {
           width: '128px',
           height: '128px',
           position: 'absolute',
-          top: cstickScale(cStickX),
+          top: -cstickScale(cStickX),
           left: cstickScale(cStickY),
         }}
       >

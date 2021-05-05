@@ -53,8 +53,10 @@ const Map = ({
         id="real"
         style={{ border: `1px solid black` }}
         onMouseMove={e => {
-          const newFrame = vis.mouseMove(e);
-          setFrame(newFrame);
+          if (vis) {
+            const newFrame = vis.mouseMove(e);
+            setFrame(newFrame);
+          }
         }}
       ></canvas>
       <canvas

@@ -22,6 +22,7 @@ interface Props {
   playerIndex: number;
   opponentIndex: number;
   setFrame: React.Dispatch<React.SetStateAction<number>>;
+  frame: number;
 }
 
 const PlayerInfo = ({
@@ -31,6 +32,7 @@ const PlayerInfo = ({
   playerIndex,
   opponentIndex,
   setFrame,
+  frame,
 }: Props) => {
   const techs = getTechOptions(frames, playerIndex, opponentIndex);
   const techTooltipText = (d: IndividualData) => {
@@ -70,6 +72,16 @@ const PlayerInfo = ({
     return `${actionIdToString(d[0])}: ${d[1]}`;
   };
 
+  const currentConversions =
+    frame != null
+      ? stats.conversions.find(
+          conversion =>
+            conversion.startFrame < frame &&
+            frame < conversion.endFrame &&
+            conversion.moves[0].playerIndex == playerIndex
+        )
+      : null;
+
   return (
     <div style={{ display: 'flex' }}>
       <div style={{ marginRight: '5px' }}>
@@ -101,6 +113,23 @@ const PlayerInfo = ({
           tooltipText={neutralTooltipText}
           setFrame={setFrame}
         />
+        {currentConversions != null ? (
+          <>
+            <div style={{ width: '300px', height: '90px', overflow: 'hidden' }}>
+              <p style={{ marginBottom: 0 }}>
+                {currentConversions.moves
+                  .map(m => MOVE_IDS[m.moveId])
+                  .join(' > ')}
+                <br />
+                {currentConversions.openingType === 'neutral-win'
+                  ? 'Neutral'
+                  : 'Counter'}
+              </p>
+            </div>
+          </>
+        ) : (
+          <div style={{ height: '90px' }}></div>
+        )}
       </div>
       <Bar
         title="Character states"
