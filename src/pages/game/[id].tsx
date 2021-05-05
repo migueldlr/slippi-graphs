@@ -19,6 +19,7 @@ import PlayerStats from '../../components/PlayerStats';
 import Head from 'next/head';
 import { CHARACTER_DATA } from '../../util/ids';
 import Spinner from '../../components/Spinner';
+import Heatmap from '../../components/Heatmap';
 
 const Game = () => {
   const [loadState, setLoadState] = useState<LoadState>(LoadState.LOADING);
@@ -184,7 +185,7 @@ const Game = () => {
       <div style={{ display: 'flex' }}>
         <div>
           <GameInfo settings={data.settings} />
-          <Map
+          <Heatmap
             data={origData}
             currentFrames={currentFrames}
             frame={frame}
