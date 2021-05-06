@@ -123,6 +123,10 @@ const PlayerInfo = ({
         {currentConversions != null ? (
           <>
             <div style={{ width: '300px', height: '90px', overflow: 'hidden' }}>
+              {currentConversions.openingType === 'neutral-win'
+                ? 'Neutral Win'
+                : 'Counter'}
+              <br />
               <div
                 style={{
                   display: 'flex',
@@ -139,10 +143,6 @@ const PlayerInfo = ({
                   </span>
                 ))}
               </div>
-              <br />
-              {currentConversions.openingType === 'neutral-win'
-                ? 'Neutral'
-                : 'Counter'}
             </div>
           </>
         ) : (
