@@ -9,6 +9,6 @@ export function getColor(
   config?: { highlight?: boolean; antihighlight?: boolean }
 ) {
   const { highlight, antihighlight } = config ?? {};
-  const opacity = highlight ? 1 : antihighlight ? 0.01 : 0.1;
+  const opacity = highlight ? 1 : antihighlight ? 0.01 : 0.05;
   return `rgba(${colors[playerId][0]}, ${colors[playerId][1]}, ${colors[playerId][2]}, ${opacity})`;
 }

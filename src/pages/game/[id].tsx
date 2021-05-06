@@ -4,9 +4,11 @@ import GameInfo from '../../components/GameInfo';
 import Map from '../../components/Map';
 import Line from '../../components/Line';
 import {
+  actionCalc,
   distanceBetween,
   filterData,
   frameCountToGameTime,
+  frameCountToSeconds,
   getAPM,
   getPercents,
 } from '../../util/calc';
@@ -19,6 +21,8 @@ import PlayerStats from '../../components/PlayerStats';
 import Head from 'next/head';
 import { CHARACTER_DATA } from '../../util/ids';
 import Spinner from '../../components/Spinner';
+import Heatmap from '../../components/Heatmap';
+import { ActionCountsType } from '@slippi/slippi-js';
 
 const Game = () => {
   const [loadState, setLoadState] = useState<LoadState>(LoadState.LOADING);
@@ -32,6 +36,7 @@ const Game = () => {
   );
 
   const [frame, setFrame] = useState<number>();
+  const [selectedPlayer, setSelectedPlayer] = useState<number>();
   const router = useRouter();
 
   const inputs: FlatData | null = useMemo(
@@ -45,6 +50,14 @@ const Game = () => {
   const distances: FlatData | null = useMemo(
     () =>
       canCalc ? { 5: distanceBetween(origData.frames, currentFrames) } : null,
+    [origData, currentFrames]
+  );
+
+  const actions: ActionCountsType[] | null = useMemo(
+    () =>
+      canCalc
+        ? actionCalc(origData.frames, origData.settings, currentFrames)
+        : null,
     [origData, currentFrames]
   );
 
@@ -62,6 +75,7 @@ const Game = () => {
       try {
         const res2 = await fetch_retry(5, url);
         const data: Data = await res2.json();
+        // console.log(data.frames[0].players[0]);
         setOrigData(data);
         setCurrentFrames([0, data.stats.lastFrame]);
         setLoadState(LoadState.SUCCESS);
@@ -115,7 +129,7 @@ const Game = () => {
       bands={data.stats.conversions.map(conversion => {
         return [
           [conversion.startFrame, conversion.endFrame],
-          conversion.playerIndex,
+          conversion.moves[0].playerIndex,
         ];
       })}
       frame={frame}
@@ -131,6 +145,7 @@ const Game = () => {
           settings={data.settings}
           metadata={data.metadata}
           setCurrentFrames={setCurrentFrames}
+          setSelectedPlayer={setSelectedPlayer}
         />
         <InputDisplay
           frame={
@@ -140,15 +155,24 @@ const Game = () => {
               ? data.frames[frame].players[player].pre
               : null
           }
+          post={
+            frame == null
+              ? null
+              : frame in data.frames
+              ? data.frames[frame].players[player].post
+              : null
+          }
         />
       </div>
       <PlayerStats
+        frame={frame}
         setFrame={setFrame}
         frames={data.frames}
         metadata={data.metadata}
         playerIndex={player}
         opponentIndex={opponent}
         stats={data.stats}
+        actions={actions.find(a => a.playerIndex === player)}
       />
     </>
   );
@@ -159,7 +183,7 @@ const Game = () => {
         {playerIds
           .map(
             id =>
-              data.metadata.players[id].names.netplay ??
+              data.metadata.players[id].names?.netplay ??
               CHARACTER_DATA[
                 +Object.keys(data.metadata.players[id].characters)[0]
               ].name
@@ -183,12 +207,13 @@ const Game = () => {
       {head}
       <div style={{ display: 'flex' }}>
         <div>
-          <GameInfo settings={data.settings} />
-          <Map
+          <GameInfo currentFrames={currentFrames} settings={data.settings} />
+          <Heatmap
             data={origData}
             currentFrames={currentFrames}
             frame={frame}
             setFrame={setFrame}
+            selectedPlayer={selectedPlayer}
           />
         </div>
         <div>

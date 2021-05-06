@@ -19,3 +19,7 @@ export const fetch_retry = async (
   }
   throw error;
 };
+
+export const round = (x: number, base: number) => {
+  return Math.round(+x / base) * base;
+};

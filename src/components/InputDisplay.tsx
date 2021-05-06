@@ -1,11 +1,12 @@
 import * as d3 from 'd3';
-import { PreFrameUpdateType } from '@slippi/slippi-js';
+import { PostFrameUpdateType, PreFrameUpdateType } from '@slippi/slippi-js';
 import React, { useMemo, useRef } from 'react';
 import Image from 'next/image';
 import { ACTION_STATES } from '../util/actionStates';
 
 interface Props {
   frame: PreFrameUpdateType | null;
+  post: PostFrameUpdateType | null;
 }
 
 const Z_MASK = 0b00000000_00010000;
@@ -21,7 +22,7 @@ const joystickScale = d3.scaleLinear().domain([-1, 1]).range([-28, 32]);
 const cstickScale = d3.scaleLinear().domain([-1, 1]).range([-22, 22]);
 const triggerScale = d3.scaleLinear().domain([0, 1]).range([0, 100]);
 
-const InputDisplay = ({ frame: initFrame }: Props) => {
+const InputDisplay = ({ frame: initFrame, post }: Props) => {
   const frame = initFrame ?? {
     joystickX: 0,
     joystickY: 0,
@@ -109,7 +110,7 @@ const InputDisplay = ({ frame: initFrame }: Props) => {
           width: '128px',
           height: '128px',
           position: 'absolute',
-          top: joystickScale(joystickY),
+          top: joystickScale(-joystickY),
           left: joystickScale(joystickX),
         }}
       >
@@ -140,7 +141,7 @@ const InputDisplay = ({ frame: initFrame }: Props) => {
           width: '128px',
           height: '128px',
           position: 'absolute',
-          top: cstickScale(cStickX),
+          top: -cstickScale(cStickX),
           left: cstickScale(cStickY),
         }}
       >
@@ -249,6 +250,12 @@ const InputDisplay = ({ frame: initFrame }: Props) => {
           ) : (
             action.state
           )}
+          {post?.hurtboxCollisionState != null ? <br /> : null}
+          {post?.hurtboxCollisionState === 1
+            ? 'invulnerable'
+            : post?.hurtboxCollisionState === 2
+            ? 'intangible'
+            : null}
         </p>
       </div>
     </div>

@@ -1,4 +1,9 @@
-import { FramesType, MetadataType, StatsType } from '@slippi/slippi-js';
+import {
+  ActionCountsType,
+  FramesType,
+  MetadataType,
+  StatsType,
+} from '@slippi/slippi-js';
 import React from 'react';
 import { ACTION_STATES } from '../util/actionStates';
 import {
@@ -22,6 +27,8 @@ interface Props {
   playerIndex: number;
   opponentIndex: number;
   setFrame: React.Dispatch<React.SetStateAction<number>>;
+  frame: number;
+  actions: ActionCountsType;
 }
 
 const PlayerInfo = ({
@@ -31,6 +38,8 @@ const PlayerInfo = ({
   playerIndex,
   opponentIndex,
   setFrame,
+  frame,
+  actions,
 }: Props) => {
   const techs = getTechOptions(frames, playerIndex, opponentIndex);
   const techTooltipText = (d: IndividualData) => {
@@ -70,6 +79,16 @@ const PlayerInfo = ({
     return `${actionIdToString(d[0])}: ${d[1]}`;
   };
 
+  const currentConversions =
+    frame != null
+      ? stats.conversions.find(
+          conversion =>
+            conversion.startFrame <= frame &&
+            frame <= conversion.endFrame &&
+            conversion.moves[0].playerIndex == playerIndex
+        )
+      : null;
+
   return (
     <div style={{ display: 'flex' }}>
       <div style={{ marginRight: '5px' }}>
@@ -101,13 +120,71 @@ const PlayerInfo = ({
           tooltipText={neutralTooltipText}
           setFrame={setFrame}
         />
+        {currentConversions != null ? (
+          <>
+            <div style={{ width: '300px', height: '90px', overflow: 'hidden' }}>
+              {currentConversions.openingType === 'neutral-win'
+                ? 'Neutral Win'
+                : 'Counter'}
+              <br />
+              <div
+                style={{
+                  display: 'flex',
+                  flexDirection: 'row',
+                  flexWrap: 'wrap',
+                }}
+              >
+                {currentConversions.moves.map((m, i) => (
+                  <span
+                    style={{ fontWeight: m.frame < frame ? 'bold' : 'normal' }}
+                  >
+                    {i !== 0 ? '  >' : ''}
+                    {MOVE_IDS[m.moveId]}
+                  </span>
+                ))}
+              </div>
+            </div>
+          </>
+        ) : (
+          <div style={{ height: '90px' }}></div>
+        )}
       </div>
-      <Bar
+      <p
+        style={{
+          width: '300px',
+          height: '200px',
+          fontSize: '12px',
+          marginTop: 0,
+        }}
+      >
+        Wavedashes: {actions.wavedashCount}
+        <br />
+        Wavelands: {actions.wavelandCount}
+        <br />
+        Air dodges: {actions.airDodgeCount}
+        <br />
+        Dash dances: {actions.dashDanceCount}
+        <br />
+        Spotdodges: {actions.spotDodgeCount}
+        <br />
+        Ledgegrabs: {actions.ledgegrabCount}
+        <br />
+        Rolls: {actions.rollCount}
+        <br />
+        L-Cancels: {actions.lCancelCount.success}/
+        {actions.lCancelCount.fail + actions.lCancelCount.success}
+        <br />
+        Grabs: {actions.grabCount.success}/
+        {actions.grabCount.fail + actions.grabCount.success}
+        <br />
+        Throws: {JSON.stringify(actions.throwCount)}
+      </p>
+      {/* <Bar
         title="Character states"
         data={states}
         playerId={playerIndex}
         tooltipText={stateTooltipText}
-      />
+      /> */}
     </div>
   );
 };

@@ -52,6 +52,7 @@ export default class StackedBarD3 {
     this.container
       .select('.bars')
       .style('display', 'grid')
+      .style('gap', '1px')
       .style('grid-template-columns', `repeat(${total}, 1fr)`);
 
     const bars = this.container
@@ -95,16 +96,13 @@ export default class StackedBarD3 {
         .select('.tooltip-text')
         .select('p')
         .text(this.tooltipText(this.currData));
-      this.container.select('.bars').style('gap', '2px');
       return this.currData.frameIdx;
     } else {
       this.container.select('.tooltip-text').style('visibility', 'hidden');
-      this.container.select('.bars').style('gap', '0');
     }
   }
 
   onMouseOut(e: React.MouseEvent<HTMLDivElement, MouseEvent>) {
     this.container.select('.tooltip-text').style('visibility', 'hidden');
-    this.container.select('.bars').style('gap', '0');
   }
 }

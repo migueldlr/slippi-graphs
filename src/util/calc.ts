@@ -1,4 +1,10 @@
-import { FramesType, MetadataType, StatsType } from '@slippi/slippi-js';
+import {
+  FramesType,
+  MetadataType,
+  StatsType,
+  ActionsComputer,
+  GameStartType,
+} from '@slippi/slippi-js';
 import { ACTION_STATES } from './actionStates';
 import { Data, FrameID, InputsType, PlayerID, Tech } from './types';
 
@@ -162,11 +168,21 @@ export const getShieldOptions = (
 
 export function countStates(
   frames: FramesType,
-  playerId: number
+  playerId: number,
+  unique?: boolean
 ): [number, number][] {
   const stateCounts: Record<number, number> = {};
   for (let frameId in frames) {
     const frame = frames[frameId].players[playerId].pre;
+    if (unique) {
+      if (!(+frameId - 1 in frames)) {
+        continue;
+      }
+      const prevFrame = frames[+frameId - 1].players[playerId].pre;
+      if (prevFrame.actionStateId === frame.actionStateId) {
+        continue;
+      }
+    }
     stateCounts[frame.actionStateId] =
       (stateCounts[frame.actionStateId] ?? 0) + 1;
   }
@@ -201,11 +217,15 @@ export function countConversionStarts(
   return out;
 }
 
-const frameCountToSeconds = (frame: number) => {
-  const seconds = Math.floor(frame / 60);
-  return `${Math.floor(seconds / 60)}:${(seconds % 60)
+export const frameCountToSeconds = (frame: number) => {
+  const seconds = frame / 60;
+  return `${Math.floor(seconds / 60)}:${(Math.floor(seconds) % 60)
     .toString()
-    .padStart(2, '0')}`;
+    .padStart(2, '0')}.${Math.floor(
+    +(seconds - Math.floor(seconds)).toFixed(2) * 100
+  )
+    .toString()
+    .padEnd(2, '0')}`;
 };
 
 export const frameCountToGameTime = (frame: number) => {
@@ -251,4 +271,17 @@ export const distanceBetween = (
   }
 
   return out;
+};
+
+export const actionCalc = (
+  frames: FramesType,
+  settings: GameStartType,
+  currentFrames: [number, number]
+) => {
+  const comp = new ActionsComputer();
+  comp.setup(settings);
+  for (let i = currentFrames[0]; i < currentFrames[1]; i++) {
+    comp.processFrame(frames[i]);
+  }
+  return comp.fetch();
 };

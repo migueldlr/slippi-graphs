@@ -28,7 +28,11 @@ const StackedBar = (props: Props) => {
 
   return (
     <div>
-      <p className="subtitle">{props.title}</p>
+      <p className="subtitle">
+        {props.title}
+        {' - '}
+        {Object.values(props.data).reduce((acc, curr) => acc + curr.length, 0)}
+      </p>
       <div
         ref={ref}
         style={{ position: 'relative' }}
