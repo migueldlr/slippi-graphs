@@ -217,11 +217,15 @@ export function countConversionStarts(
   return out;
 }
 
-const frameCountToSeconds = (frame: number) => {
-  const seconds = Math.floor(frame / 60);
-  return `${Math.floor(seconds / 60)}:${(seconds % 60)
+export const frameCountToSeconds = (frame: number) => {
+  const seconds = frame / 60;
+  return `${Math.floor(seconds / 60)}:${(Math.floor(seconds) % 60)
     .toString()
-    .padStart(2, '0')}`;
+    .padStart(2, '0')}.${Math.floor(
+    +(seconds - Math.floor(seconds)).toFixed(2) * 100
+  )
+    .toString()
+    .padEnd(2, '0')}`;
 };
 
 export const frameCountToGameTime = (frame: number) => {
@@ -276,7 +280,6 @@ export const actionCalc = (
 ) => {
   const comp = new ActionsComputer();
   comp.setup(settings);
-  console.log(currentFrames);
   for (let i = currentFrames[0]; i < currentFrames[1]; i++) {
     comp.processFrame(frames[i]);
   }

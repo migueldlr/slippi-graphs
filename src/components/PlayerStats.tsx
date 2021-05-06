@@ -1,4 +1,9 @@
-import { FramesType, MetadataType, StatsType } from '@slippi/slippi-js';
+import {
+  ActionCountsType,
+  FramesType,
+  MetadataType,
+  StatsType,
+} from '@slippi/slippi-js';
 import React from 'react';
 import { ACTION_STATES } from '../util/actionStates';
 import {
@@ -23,6 +28,7 @@ interface Props {
   opponentIndex: number;
   setFrame: React.Dispatch<React.SetStateAction<number>>;
   frame: number;
+  actions: ActionCountsType;
 }
 
 const PlayerInfo = ({
@@ -33,6 +39,7 @@ const PlayerInfo = ({
   opponentIndex,
   setFrame,
   frame,
+  actions,
 }: Props) => {
   const techs = getTechOptions(frames, playerIndex, opponentIndex);
   const techTooltipText = (d: IndividualData) => {
@@ -142,12 +149,42 @@ const PlayerInfo = ({
           <div style={{ height: '90px' }}></div>
         )}
       </div>
-      <Bar
+      <p
+        style={{
+          width: '300px',
+          height: '200px',
+          fontSize: '12px',
+          marginTop: 0,
+        }}
+      >
+        Wavedashes: {actions.wavedashCount}
+        <br />
+        Wavelands: {actions.wavelandCount}
+        <br />
+        Air dodges: {actions.airDodgeCount}
+        <br />
+        Dash dances: {actions.dashDanceCount}
+        <br />
+        Spotdodges: {actions.spotDodgeCount}
+        <br />
+        Ledgegrabs: {actions.ledgegrabCount}
+        <br />
+        Rolls: {actions.rollCount}
+        <br />
+        L-Cancels: {actions.lCancelCount.success}/
+        {actions.lCancelCount.fail + actions.lCancelCount.success}
+        <br />
+        Grabs: {actions.grabCount.success}/
+        {actions.grabCount.fail + actions.grabCount.success}
+        <br />
+        Throws: {JSON.stringify(actions.throwCount)}
+      </p>
+      {/* <Bar
         title="Character states"
         data={states}
         playerId={playerIndex}
         tooltipText={stateTooltipText}
-      />
+      /> */}
     </div>
   );
 };

@@ -8,6 +8,7 @@ import {
   distanceBetween,
   filterData,
   frameCountToGameTime,
+  frameCountToSeconds,
   getAPM,
   getPercents,
 } from '../../util/calc';
@@ -166,6 +167,7 @@ const Game = () => {
         playerIndex={player}
         opponentIndex={opponent}
         stats={data.stats}
+        actions={actions.find(a => a.playerIndex === player)}
       />
     </>
   );
@@ -176,7 +178,7 @@ const Game = () => {
         {playerIds
           .map(
             id =>
-              data.metadata.players[id].names.netplay ??
+              data.metadata.players[id].names?.netplay ??
               CHARACTER_DATA[
                 +Object.keys(data.metadata.players[id].characters)[0]
               ].name
@@ -200,7 +202,7 @@ const Game = () => {
       {head}
       <div style={{ display: 'flex' }}>
         <div>
-          <GameInfo settings={data.settings} />
+          <GameInfo currentFrames={currentFrames} settings={data.settings} />
           <Heatmap
             data={origData}
             currentFrames={currentFrames}
