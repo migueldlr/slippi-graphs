@@ -61,8 +61,6 @@ const Game = () => {
     [origData, currentFrames]
   );
 
-  console.log(actions);
-
   useEffect(() => {
     // console.log(router.query);
     if (!router.isReady) {
@@ -77,7 +75,7 @@ const Game = () => {
       try {
         const res2 = await fetch_retry(5, url);
         const data: Data = await res2.json();
-        console.log(data.stats);
+        // console.log(data.frames[0].players[0]);
         setOrigData(data);
         setCurrentFrames([0, data.stats.lastFrame]);
         setLoadState(LoadState.SUCCESS);
@@ -155,6 +153,13 @@ const Game = () => {
               ? null
               : frame in data.frames
               ? data.frames[frame].players[player].pre
+              : null
+          }
+          post={
+            frame == null
+              ? null
+              : frame in data.frames
+              ? data.frames[frame].players[player].post
               : null
           }
         />

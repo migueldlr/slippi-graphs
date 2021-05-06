@@ -166,6 +166,8 @@ export default class HeatmapD3 {
             }
       );
     }
+    // const x = round(+node.attr('x'), 40);
+    // const y = -round(+node.attr('y'), 40);
     ctx.beginPath();
     ctx.arc(
       +node.attr('x') + this.width / 2,
@@ -176,6 +178,7 @@ export default class HeatmapD3 {
     );
     ctx.fill();
     ctx.closePath();
+    // ctx.fillRect(x - 20 + this.width / 2, y - 20 + this.height / 2, 40, 40);
   }
 
   redraw(preserveFake?: boolean) {
