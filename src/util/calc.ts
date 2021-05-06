@@ -1,4 +1,10 @@
-import { FramesType, MetadataType, StatsType } from '@slippi/slippi-js';
+import {
+  FramesType,
+  MetadataType,
+  StatsType,
+  ActionsComputer,
+  GameStartType,
+} from '@slippi/slippi-js';
 import { ACTION_STATES } from './actionStates';
 import { Data, FrameID, InputsType, PlayerID, Tech } from './types';
 
@@ -261,4 +267,18 @@ export const distanceBetween = (
   }
 
   return out;
+};
+
+export const actionCalc = (
+  frames: FramesType,
+  settings: GameStartType,
+  currentFrames: [number, number]
+) => {
+  const comp = new ActionsComputer();
+  comp.setup(settings);
+  console.log(currentFrames);
+  for (let i = currentFrames[0]; i < currentFrames[1]; i++) {
+    comp.processFrame(frames[i]);
+  }
+  return comp.fetch();
 };

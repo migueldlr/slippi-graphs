@@ -4,6 +4,7 @@ import GameInfo from '../../components/GameInfo';
 import Map from '../../components/Map';
 import Line from '../../components/Line';
 import {
+  actionCalc,
   distanceBetween,
   filterData,
   frameCountToGameTime,
@@ -20,6 +21,7 @@ import Head from 'next/head';
 import { CHARACTER_DATA } from '../../util/ids';
 import Spinner from '../../components/Spinner';
 import Heatmap from '../../components/Heatmap';
+import { ActionCountsType } from '@slippi/slippi-js';
 
 const Game = () => {
   const [loadState, setLoadState] = useState<LoadState>(LoadState.LOADING);
@@ -49,6 +51,16 @@ const Game = () => {
       canCalc ? { 5: distanceBetween(origData.frames, currentFrames) } : null,
     [origData, currentFrames]
   );
+
+  const actions: ActionCountsType[] | null = useMemo(
+    () =>
+      canCalc
+        ? actionCalc(origData.frames, origData.settings, currentFrames)
+        : null,
+    [origData, currentFrames]
+  );
+
+  console.log(actions);
 
   useEffect(() => {
     // console.log(router.query);

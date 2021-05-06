@@ -76,8 +76,8 @@ const PlayerInfo = ({
     frame != null
       ? stats.conversions.find(
           conversion =>
-            conversion.startFrame < frame &&
-            frame < conversion.endFrame &&
+            conversion.startFrame <= frame &&
+            frame <= conversion.endFrame &&
             conversion.moves[0].playerIndex == playerIndex
         )
       : null;
@@ -116,15 +116,26 @@ const PlayerInfo = ({
         {currentConversions != null ? (
           <>
             <div style={{ width: '300px', height: '90px', overflow: 'hidden' }}>
-              <p style={{ marginBottom: 0 }}>
-                {currentConversions.moves
-                  .map(m => MOVE_IDS[m.moveId])
-                  .join(' > ')}
-                <br />
-                {currentConversions.openingType === 'neutral-win'
-                  ? 'Neutral'
-                  : 'Counter'}
-              </p>
+              <div
+                style={{
+                  display: 'flex',
+                  flexDirection: 'row',
+                  flexWrap: 'wrap',
+                }}
+              >
+                {currentConversions.moves.map((m, i) => (
+                  <span
+                    style={{ fontWeight: m.frame < frame ? 'bold' : 'normal' }}
+                  >
+                    {i !== 0 ? '  >' : ''}
+                    {MOVE_IDS[m.moveId]}
+                  </span>
+                ))}
+              </div>
+              <br />
+              {currentConversions.openingType === 'neutral-win'
+                ? 'Neutral'
+                : 'Counter'}
             </div>
           </>
         ) : (
