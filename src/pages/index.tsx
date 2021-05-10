@@ -77,7 +77,11 @@ export default function Home() {
         </h3>
         <div
           {...getRootProps({ className: 'dropzone' })}
-          style={{ backgroundColor: '#EBEBEB', padding: '20px' }}
+          style={{
+            backgroundColor: '#EBEBEB',
+            padding: '20px',
+            cursor: 'pointer',
+          }}
         >
           <input {...getInputProps()} />
           <p style={{ margin: 0 }}>🐸 Drag a .slp file here 🐸</p>
