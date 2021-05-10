@@ -12,7 +12,7 @@ import {
   getAPM,
   getPercents,
 } from '../../util/calc';
-import { Data, FlatData, LoadState } from '../../util/types';
+import { Data, DistanceDirection, FlatData, LoadState } from '../../util/types';
 import { fetch_retry } from '../../util/util';
 import Brush from '../../components/Brush';
 import InputDisplay from '../../components/InputDisplay';
@@ -28,6 +28,9 @@ const Game = () => {
   const [loadState, setLoadState] = useState<LoadState>(LoadState.LOADING);
   const [origData, setOrigData] = useState<Data | null>(null);
   const [frameWindow, setFrameWindow] = useState<3600 | 60>(3600);
+  const [distanceDirection, setDistanceDirection] = useState<DistanceDirection>(
+    'none'
+  );
 
   const [currentFrames, setCurrentFrames] = useState<[number, number]>(null);
   const canCalc = origData != null && currentFrames != null;
@@ -51,8 +54,16 @@ const Game = () => {
   );
   const distances: FlatData | null = useMemo(
     () =>
-      canCalc ? { 5: distanceBetween(origData.frames, currentFrames) } : null,
-    [origData, currentFrames]
+      canCalc
+        ? {
+            5: distanceBetween(
+              origData.frames,
+              currentFrames,
+              distanceDirection
+            ),
+          }
+        : null,
+    [origData, currentFrames, distanceDirection]
   );
 
   const actions: ActionCountsType[] | null = useMemo(
@@ -264,13 +275,24 @@ const Game = () => {
           toggle={() => setFrameWindow(fw => (fw === 60 ? 3600 : 60))}
         />
         <Line
-          title="Distance between Players"
+          title={`${
+            { none: '', h: 'Horizontal ', v: 'Vertical ' }[distanceDirection]
+          }Distance between Players`}
           data={distances}
           frame={frame}
           setFrame={setFrame}
           tooltipText={(frame, data) => {
             return `${data[0][1]}`;
           }}
+          toggle={() =>
+            setDistanceDirection(
+              d =>
+                (({ v: 'none', none: 'h', h: 'v' } as Record<
+                  DistanceDirection,
+                  DistanceDirection
+                >)[d])
+            )
+          }
         />
       </div>
     </div>

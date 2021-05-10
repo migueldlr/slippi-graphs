@@ -51,3 +51,5 @@ export enum LoadState {
   SUCCESS,
   ERROR,
 }
+
+export type DistanceDirection = 'h' | 'v' | 'none';

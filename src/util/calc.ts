@@ -6,7 +6,14 @@ import {
   GameStartType,
 } from '@slippi/slippi-js';
 import { ACTION_STATES } from './actionStates';
-import { Data, FrameID, InputsType, PlayerID, Tech } from './types';
+import {
+  Data,
+  DistanceDirection,
+  FrameID,
+  InputsType,
+  PlayerID,
+  Tech,
+} from './types';
 
 export const getPositions = (frames: FramesType, playerId = 0) => {
   const positions: {
@@ -254,7 +261,8 @@ export const actionIdToString = (id: number) => {
 
 export const distanceBetween = (
   frames: FramesType,
-  currentFrames: [number, number]
+  currentFrames: [number, number],
+  direction: DistanceDirection = 'none'
 ) => {
   const out: [number, number][] = [];
 
@@ -271,7 +279,19 @@ export const distanceBetween = (
     const { positionX: p1x, positionY: p1y } = players[playerIds[0]].pre;
     const { positionX: p2x, positionY: p2y } = players[playerIds[1]].pre;
 
-    out.push([+i, Math.hypot(p1x - p2x, p1y - p2y)]);
+    switch (direction) {
+      case 'none':
+        out.push([+i, Math.hypot(p1x - p2x, p1y - p2y)]);
+        break;
+      case 'h':
+        out.push([+i, Math.abs(p1x - p2x)]);
+        break;
+      case 'v':
+        out.push([+i, Math.abs(p1y - p2y)]);
+        break;
+      default:
+        break;
+    }
   }
 
   return out;
