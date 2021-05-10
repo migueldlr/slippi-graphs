@@ -14,7 +14,7 @@ function MyApp({ Component, pageProps }) {
 
   useEffect(() => {
     const handleRouteChange = url => {
-      ga.pageview(url);
+      pageview(url);
     };
     //When the component is mounted, subscribe to router changes
     //and log those page views
