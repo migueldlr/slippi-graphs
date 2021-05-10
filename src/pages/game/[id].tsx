@@ -24,6 +24,7 @@ import Spinner from '../../components/Spinner';
 import Heatmap from '../../components/Heatmap';
 import { ActionCountsType } from '@slippi/slippi-js';
 import Link from 'next/link';
+import { getRGBFromCSS } from '../../util/colors';
 
 const Game = () => {
   const [loadState, setLoadState] = useState<LoadState>(LoadState.LOADING);
@@ -32,6 +33,9 @@ const Game = () => {
   const [distanceDirection, setDistanceDirection] = useState<DistanceDirection>(
     'none'
   );
+  const [idToRgb, setIdToRgb] = useState<
+    Record<number, [number, number, number]>
+  >({});
 
   const [currentFrames, setCurrentFrames] = useState<[number, number]>(null);
   const canCalc = origData != null && currentFrames != null;
@@ -74,6 +78,14 @@ const Game = () => {
         : null,
     [origData, currentFrames]
   );
+  useEffect(() => {
+    setIdToRgb({
+      0: getRGBFromCSS(0),
+      1: getRGBFromCSS(1),
+      2: getRGBFromCSS(2),
+      3: getRGBFromCSS(3),
+    });
+  }, []);
 
   useEffect(() => {
     if (!router.isReady) {
@@ -150,7 +162,7 @@ const Game = () => {
     />
   );
 
-  const player = (player, opponent) => (
+  const player = (player: number, opponent: number) => (
     <>
       <div style={{ margin: '0px 5px' }}>
         <PlayerInfo
@@ -160,6 +172,10 @@ const Game = () => {
           metadata={data.metadata}
           setCurrentFrames={setCurrentFrames}
           setSelectedPlayer={setSelectedPlayer}
+          rgb={idToRgb[player]}
+          setRgb={(c: { r: number; g: number; b: number }) => {
+            setIdToRgb(x => ({ ...x, [player]: [c.r, c.g, c.b] }));
+          }}
         />
         <InputDisplay
           frame={
@@ -228,6 +244,7 @@ const Game = () => {
             frame={frame}
             setFrame={setFrame}
             selectedPlayer={selectedPlayer}
+            idToRgb={idToRgb}
           />
         </div>
         <div>

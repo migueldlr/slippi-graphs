@@ -18,56 +18,63 @@ body {
   visibility: visible;
 }
 
+:root {
+  --p0: rgb(255, 0, 0);
+  --p1: rgb(17, 0, 255);
+  --p2: rgb(254, 228, 64);
+  --p3: rgb(5, 156, 0);
+}
+
 .p0 {
-  fill: rgb(255, 0, 0);
+  fill: var(--p0);
 }
 
 .p1 {
-  fill: rgb(17, 0, 255);
+  fill: var(--p1);
 }
 
 .p2 {
-  fill: rgb(219, 209, 70);
+  fill: var(--p2);
 }
 
 .p3 {
-  fill: rgb(5, 156, 0);
+  fill: var(--p3);
 }
 
 div.p0 {
-  background-color: rgb(255, 0, 0);
+  background-color: var(--p0);
 }
 
 div.p1 {
-  background-color: rgb(17, 0, 255);
+  background-color: var(--p1);
 }
 
 div.p2 {
-  background-color: rgb(219, 209, 70);
+  background-color: var(--p2);
 }
 
 div.p3 {
-  background-color: rgb(5, 156, 0);
+  background-color: var(--p3);
+}
+
+.line {
+  fill: none;
 }
 
 .line.p0 {
-  fill: none;
-  stroke: rgb(255, 0, 0);
+  stroke: var(--p0);
 }
 
 .line.p1 {
-  fill: none;
-  stroke: rgb(17, 0, 255);
+  stroke: var(--p1);
 }
 
 .line.p2 {
-  fill: none;
-  stroke: rgb(219, 209, 70);
+  stroke: var(--p2);
 }
 
 .line.p3 {
-  fill: none;
-  stroke: rgb(5, 156, 0);
+  stroke: var(--p3);
 }
 
 .line.p5 {

@@ -263,7 +263,7 @@ const Brush = (props: Props) => {
       style={{
         width: `100%`,
         height: `50px`,
-        backgroundColor: `#D8D5DB`,
+        backgroundColor: `rgb(230, 230, 230)`,
         overflow: `visible`,
         position: 'relative',
       }}

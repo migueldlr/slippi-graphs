@@ -7,9 +7,8 @@ import {
 import { PlayerInput } from '@slippi/slippi-js/dist/stats/inputs';
 import * as d3 from 'd3';
 import { getPositions } from '../util/calc';
-import { getColor } from '../util/colors';
+import { getOpacity } from '../util/colors';
 import { PlayerID, Position } from '../util/types';
-import { round } from '../util/util';
 
 export default class HeatmapD3 {
   containerEl: HTMLDivElement;
@@ -42,8 +41,13 @@ export default class HeatmapD3 {
   canvas: HTMLCanvasElement;
   height: number;
   selectedPlayer: number;
+  idToRgb: Record<number, [number, number, number]>;
 
-  constructor(containerEl: HTMLDivElement, data) {
+  constructor(
+    containerEl: HTMLDivElement,
+    data,
+    idToRgb: Record<number, [number, number, number]>
+  ) {
     this.fakeContainerEl = document.createElement('custom');
     this.fakeContainer = d3.select(this.fakeContainerEl as d3.BaseType);
     this.containerEl = containerEl;
@@ -88,6 +92,7 @@ export default class HeatmapD3 {
     this.colorToNode = {};
     this.colors = new Set();
 
+    this.updateColors(idToRgb);
     this.update();
   }
 
@@ -156,18 +161,17 @@ export default class HeatmapD3 {
       ctx.fillStyle = color;
       this.colorToNode[color] = node;
     } else {
-      ctx.fillStyle = getColor(
-        +node.attr('playerid'),
+      const rgb = this.idToRgb[+node.attr('playerid')];
+      ctx.fillStyle = `rgba(${rgb[0]}, ${rgb[1]}, ${rgb[2]}, ${getOpacity(
         this.frame == null
           ? {}
           : {
               highlight: +node.attr('frameIdx') === this.frame,
               antihighlight: +node.attr('frameIdx') !== this.frame,
             }
-      );
+      )}`;
     }
-    // const x = round(+node.attr('x'), 40);
-    // const y = -round(+node.attr('y'), 40);
+
     ctx.beginPath();
     ctx.arc(
       +node.attr('x') + this.width / 2,
@@ -227,6 +231,11 @@ export default class HeatmapD3 {
 
   updateFrame(frame: number) {
     this.frame = frame;
+    this.redraw(true);
+  }
+
+  updateColors(idToRgb: Record<number, [number, number, number]>) {
+    this.idToRgb = idToRgb;
     this.redraw(true);
   }
 }

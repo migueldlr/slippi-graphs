@@ -20,6 +20,7 @@ interface Props {
   frame?: number;
   setFrame: React.Dispatch<React.SetStateAction<number>>;
   selectedPlayer: number;
+  idToRgb: Record<number, [number, number, number]>;
 }
 
 let vis: HeatmapD3;
@@ -30,11 +31,12 @@ const Map = ({
   frame,
   setFrame,
   selectedPlayer,
+  idToRgb,
 }: Props) => {
   const ref = useRef(null);
 
   useEffect(() => {
-    vis = new HeatmapD3(ref.current, data);
+    vis = new HeatmapD3(ref.current, data, idToRgb);
   }, []);
 
   useEffect(() => {
@@ -44,6 +46,10 @@ const Map = ({
   useEffect(() => {
     vis.updateFrame(frame);
   }, [frame]);
+
+  useEffect(() => {
+    vis.updateColors(idToRgb);
+  }, [idToRgb]);
 
   return (
     <div ref={ref}>
