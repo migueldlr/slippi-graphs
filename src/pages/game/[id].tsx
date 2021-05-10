@@ -1,7 +1,6 @@
 import { useRouter } from 'next/router';
 import React, { useEffect, useMemo, useState } from 'react';
 import GameInfo from '../../components/GameInfo';
-import Map from '../../components/Map';
 import Line from '../../components/Line';
 import {
   actionCalc,
