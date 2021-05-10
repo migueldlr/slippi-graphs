@@ -97,7 +97,7 @@ const Game = () => {
         url = '/api/game';
       }
       try {
-        const res2 = await fetch_retry(5, url);
+        const res2 = await fetch_retry(20, url);
         const data: Data = await res2.json();
         console.log(data.frames[0].players[0]);
         // console.log(data.inputs[0][1201]);
@@ -122,7 +122,7 @@ const Game = () => {
     return (
       <div className="container">
         <Head>
-          <title>Slippi Graphs</title>
+          <title>Loading... - Slippi Graphs</title>
         </Head>
         <Spinner />
       </div>
@@ -133,7 +133,7 @@ const Game = () => {
     return (
       <div className="container">
         <Head>
-          <title>Slippi Graphs</title>
+          <title>Error - Slippi Graphs</title>
         </Head>
         <p>Couldn't process your file 😢</p>
       </div>
@@ -151,12 +151,17 @@ const Game = () => {
       marks={data.stats.stocks.map(stock => {
         return [stock.endFrame, `Player ${stock.playerIndex} dies`];
       })}
-      bands={data.stats.conversions.map(conversion => {
-        return [
-          [conversion.startFrame, conversion.endFrame],
-          conversion.moves[0].playerIndex,
-        ];
-      })}
+      bands={data.stats.conversions
+        .map((conversion): [[number, number], number] => {
+          if (conversion.moves.length === 0) {
+            return null;
+          }
+          return [
+            [conversion.startFrame, conversion.endFrame],
+            conversion.moves[0].playerIndex,
+          ];
+        })
+        .filter(x => x != null)}
       frame={frame}
     />
   );

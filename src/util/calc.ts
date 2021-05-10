@@ -214,6 +214,9 @@ export function countConversionStarts(
   const { conversions } = stats;
 
   for (let conversion of conversions) {
+    if (conversion.moves.length === 0) {
+      continue;
+    }
     const move = conversion.moves[0];
     if (
       conversion.openingType !== type ||
