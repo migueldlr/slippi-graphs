@@ -45,20 +45,24 @@ export const getPercents = (
   return out;
 };
 
-export const getAPM = (data: InputsType, currentFrames: [number, number]) => {
+export const getAPM = (
+  data: InputsType,
+  currentFrames: [number, number],
+  frameWindow: number = 120
+) => {
   const out: Record<PlayerID, [FrameID, number][]> = {};
   for (let id in data) {
     const player = data[id];
     out[id] = [];
     let sum = 0;
     for (
-      let i = Math.max(currentFrames[0] - 120, 0);
+      let i = Math.max(currentFrames[0] - frameWindow, 0);
       i < currentFrames[1];
       i++
     ) {
       const frame = player[i];
-      if (i > currentFrames[0] && i > 120) {
-        sum -= player[i - 120].singleFrameInput;
+      if (i > currentFrames[0] && i > frameWindow) {
+        sum -= player[i - frameWindow].singleFrameInput;
       }
       sum += frame.singleFrameInput;
       if (i >= currentFrames[0]) {

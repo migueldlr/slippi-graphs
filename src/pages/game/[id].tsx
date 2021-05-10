@@ -27,6 +27,7 @@ import { ActionCountsType } from '@slippi/slippi-js';
 const Game = () => {
   const [loadState, setLoadState] = useState<LoadState>(LoadState.LOADING);
   const [origData, setOrigData] = useState<Data | null>(null);
+  const [frameWindow, setFrameWindow] = useState<3600 | 60>(3600);
 
   const [currentFrames, setCurrentFrames] = useState<[number, number]>(null);
   const canCalc = origData != null && currentFrames != null;
@@ -40,8 +41,9 @@ const Game = () => {
   const router = useRouter();
 
   const inputs: FlatData | null = useMemo(
-    () => (canCalc ? getAPM(origData.inputs, currentFrames) : null),
-    [origData, currentFrames]
+    () =>
+      canCalc ? getAPM(origData.inputs, currentFrames, frameWindow) : null,
+    [origData, currentFrames, frameWindow]
   );
   const percents: FlatData | null = useMemo(
     () => (canCalc ? getPercents(origData.frames, currentFrames) : null),
@@ -62,7 +64,6 @@ const Game = () => {
   );
 
   useEffect(() => {
-    // console.log(router.query);
     if (!router.isReady) {
       return;
     }
@@ -75,7 +76,8 @@ const Game = () => {
       try {
         const res2 = await fetch_retry(5, url);
         const data: Data = await res2.json();
-        // console.log(data.frames[0].players[0]);
+        console.log(data.frames[0].players[0]);
+        // console.log(data.inputs[0][1201]);
         setOrigData(data);
         setCurrentFrames([0, data.stats.lastFrame]);
         setLoadState(LoadState.SUCCESS);
@@ -250,7 +252,7 @@ const Game = () => {
           }}
         />
         <Line
-          title="Actions per Second"
+          title={`Actions per ${frameWindow === 60 ? 'Second' : 'Minute'}`}
           data={inputs}
           frame={frame}
           setFrame={setFrame}
@@ -259,6 +261,7 @@ const Game = () => {
               data[1][0] + 1
             }: ${data[1][1]}`;
           }}
+          toggle={() => setFrameWindow(fw => (fw === 60 ? 3600 : 60))}
         />
         <Line
           title="Distance between Players"

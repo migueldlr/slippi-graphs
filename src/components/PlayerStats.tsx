@@ -89,6 +89,10 @@ const PlayerInfo = ({
         )
       : null;
 
+  const throwSum = Object.values(actions.throwCount).reduce(
+    (acc, curr) => acc + curr
+  );
+
   return (
     <div style={{ display: 'flex' }}>
       <div style={{ marginRight: '5px' }}>
@@ -177,7 +181,13 @@ const PlayerInfo = ({
         Grabs: {actions.grabCount.success}/
         {actions.grabCount.fail + actions.grabCount.success}
         <br />
-        Throws: {JSON.stringify(actions.throwCount)}
+        Throws: {throwSum}
+        {throwSum > 0
+          ? ` (${Object.entries(actions.throwCount)
+              .filter(a => a[1] > 0)
+              .map(a => `${a[0]}: ${a[1]}`)
+              .join(', ')})`
+          : ''}
       </p>
       {/* <Bar
         title="Character states"

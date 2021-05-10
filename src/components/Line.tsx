@@ -1,15 +1,18 @@
 import React, { useEffect, useRef } from 'react';
 import LineD3 from './line-d3';
 
+import { VscArrowBoth } from 'react-icons/vsc';
+
 interface Props {
   data: Record<number, [number, number][]>;
   frame: number;
   setFrame: React.Dispatch<React.SetStateAction<number>>;
   title: string;
   tooltipText: (frame: number, d: [number, number][]) => string;
+  toggle?: () => void;
 }
 
-const Line = ({ data, frame, setFrame, title, tooltipText }: Props) => {
+const Line = ({ data, frame, setFrame, title, tooltipText, toggle }: Props) => {
   const ref = useRef(null);
   const vis = useRef<LineD3>(null);
 
@@ -27,9 +30,15 @@ const Line = ({ data, frame, setFrame, title, tooltipText }: Props) => {
 
   return (
     <div style={{ marginBottom: '10px' }}>
-      <p className="subtitle" style={{ marginBottom: '5px' }}>
-        {title}
-      </p>
+      <div style={{ display: 'flex', marginBottom: '5px' }}>
+        <p className="subtitle">{title}</p>
+        {toggle != null && (
+          <VscArrowBoth
+            onClick={toggle}
+            style={{ marginLeft: '5px', cursor: 'pointer' }}
+          />
+        )}
+      </div>
       <div
         ref={ref}
         id="scatter"
