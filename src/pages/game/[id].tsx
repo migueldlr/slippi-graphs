@@ -23,7 +23,7 @@ import Spinner from '../../components/Spinner';
 import Heatmap from '../../components/Heatmap';
 import { ActionCountsType } from '@slippi/slippi-js';
 import Link from 'next/link';
-import { getRGBFromCSS } from '../../util/colors';
+import { DEFAULT_COLORS, getRGBFromCSS, rgbToHex } from '../../util/colors';
 
 const Game = () => {
   const [loadState, setLoadState] = useState<LoadState>(LoadState.LOADING);
@@ -34,7 +34,7 @@ const Game = () => {
   );
   const [idToRgb, setIdToRgb] = useState<
     Record<number, [number, number, number]>
-  >({});
+  >(DEFAULT_COLORS);
 
   const [currentFrames, setCurrentFrames] = useState<[number, number]>(null);
   const canCalc = origData != null && currentFrames != null;
@@ -78,12 +78,12 @@ const Game = () => {
     [origData, currentFrames]
   );
   useEffect(() => {
-    setIdToRgb({
-      0: getRGBFromCSS(0),
-      1: getRGBFromCSS(1),
-      2: getRGBFromCSS(2),
-      3: getRGBFromCSS(3),
-    });
+    for (let i = 0; i < 4; i++) {
+      document.documentElement.style.setProperty(
+        `--p${i}`,
+        rgbToHex(idToRgb[i])
+      );
+    }
   }, []);
 
   useEffect(() => {

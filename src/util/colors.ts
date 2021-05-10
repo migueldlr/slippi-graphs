@@ -6,6 +6,13 @@ function parseColor(s: string): [number, number, number] {
   return hexToRgb(s);
 }
 
+export const DEFAULT_COLORS: Record<number, [number, number, number]> = {
+  0: [255, 0, 0],
+  1: [17, 0, 255],
+  2: [254, 228, 64],
+  3: [5, 156, 0],
+};
+
 function hexToRgb(hex: string): [number, number, number] {
   const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
   return result
