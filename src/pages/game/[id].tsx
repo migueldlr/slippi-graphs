@@ -23,6 +23,7 @@ import { CHARACTER_DATA } from '../../util/ids';
 import Spinner from '../../components/Spinner';
 import Heatmap from '../../components/Heatmap';
 import { ActionCountsType } from '@slippi/slippi-js';
+import Link from 'next/link';
 
 const Game = () => {
   const [loadState, setLoadState] = useState<LoadState>(LoadState.LOADING);
@@ -294,6 +295,9 @@ const Game = () => {
             )
           }
         />
+      </div>
+      <div style={{ marginTop: '2em' }}>
+        <Link href="/">Return to home</Link>
       </div>
     </div>
   );
