@@ -85,6 +85,7 @@ const PlayerInfo = ({
           conversion =>
             conversion.startFrame <= frame &&
             frame <= conversion.endFrame &&
+            conversion.moves.length > 0 &&
             conversion.moves[0].playerIndex == playerIndex
         )
       : null;

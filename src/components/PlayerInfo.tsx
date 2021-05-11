@@ -2,7 +2,7 @@ import { GameStartType, MetadataType, StatsType } from '@slippi/slippi-js';
 import React, { useRef, useState } from 'react';
 import { CHARACTER_DATA } from '../util/ids';
 import Image from 'next/image';
-import { CompactPicker, SketchPicker } from 'react-color';
+import { SketchPicker } from 'react-color';
 import { getRGBFromCSS, rgbToHex } from '../util/colors';
 
 interface Props {
