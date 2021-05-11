@@ -7,7 +7,6 @@ import {
 import { PlayerInput } from '@slippi/slippi-js/dist/stats/inputs';
 import * as d3 from 'd3';
 import { getPositions } from '../util/calc';
-import { getOpacity } from '../util/colors';
 import { PlayerID, Position } from '../util/types';
 
 export default class HeatmapD3 {
@@ -33,17 +32,14 @@ export default class HeatmapD3 {
   frame: number;
   fakeCtx: CanvasRenderingContext2D;
   colors: Set<string>;
-  colorToNode: Record<
-    string,
-    d3.Selection<d3.BaseType, unknown, null, undefined>
-  >;
+  colorToNode: Record<string, string>;
   width: number;
   canvas: HTMLCanvasElement;
   height: number;
   selectedPlayer: number;
   idToRgb: Record<number, [number, number, number]>;
-  paletteCanvas: HTMLCanvasElement;
-  paletteCtx: CanvasRenderingContext2D;
+  highlightCanvas: HTMLCanvasElement;
+  highlightCtx: CanvasRenderingContext2D;
 
   constructor(
     containerEl: HTMLDivElement,
@@ -65,13 +61,13 @@ export default class HeatmapD3 {
       .select('canvas#fake')
       .node() as HTMLCanvasElement;
 
-    this.paletteCanvas = this.container
-      .select('canvas#real')
+    this.highlightCanvas = this.container
+      .select('canvas#highlight')
       .node() as HTMLCanvasElement;
 
     this.fakeCtx = fakeCanvas.getContext('2d');
     this.ctx = this.canvas.getContext('2d');
-    this.paletteCtx = this.paletteCanvas.getContext('2d');
+    this.highlightCtx = this.highlightCanvas.getContext('2d');
 
     this.width = +this.canvas.width;
     this.height = +this.canvas.height;
@@ -89,6 +85,12 @@ export default class HeatmapD3 {
     fakeCanvas.height = Math.floor(this.height * scale);
     this.fakeCtx.scale(scale, scale);
 
+    this.highlightCanvas.style.width = `${this.width}px`;
+    this.highlightCanvas.style.height = `${this.height}px`;
+    this.highlightCanvas.width = Math.floor(this.width * scale);
+    this.highlightCanvas.height = Math.floor(this.height * scale);
+    this.highlightCtx.scale(scale, scale);
+
     this.playerIds = Object.keys(this.data.metadata.players).map(id => +id);
 
     this.positions = {};
@@ -100,7 +102,6 @@ export default class HeatmapD3 {
     this.colors = new Set();
 
     this.updateColors(idToRgb);
-    this.update();
   }
 
   clear(preserveFake: boolean) {
@@ -110,36 +111,6 @@ export default class HeatmapD3 {
       this.colors.clear();
       this.colorToNode = {};
     }
-  }
-
-  update() {
-    this.playerIds.forEach(id => {
-      const dots = this.fakeContainer
-        .selectAll(`.dot.p${id}`)
-        .data(this.positions[id], (d: Position) => d.frameIdx);
-
-      const dotsEnter: d3.Selection<
-        d3.BaseType,
-        Position,
-        d3.BaseType,
-        unknown
-      > = dots.enter().append('circle').attr('class', `dot p${id}`);
-
-      dotsEnter
-        .merge(dots)
-        .attr('playerid', id)
-        .attr('frameIdx', d => d.frameIdx)
-        .attr('x', d => d.positionX)
-        .attr('y', d => d.positionY);
-    });
-    this.fakeContainer
-      .selectAll('.dot')
-      .sort((a: Position, b: Position) =>
-        d3.ascending(+a.frameIdx, +b.frameIdx)
-      )
-      .each((d, i, nodes) => {
-        const node = d3.select(nodes[i]);
-      });
   }
 
   updateFrames(currentFrames: [number, number], selectedPlayer: number) {
@@ -159,77 +130,99 @@ export default class HeatmapD3 {
   }
 
   drawCircle(
-    node: d3.Selection<d3.BaseType, unknown, null, undefined>,
-    fake: boolean
+    playerId: number,
+    pos: Position,
+    context: 'fake' | 'real' | 'highlight' = 'real'
   ) {
-    const ctx = fake ? this.fakeCtx : this.ctx;
-    if (fake) {
+    const ctx =
+      context === 'fake'
+        ? this.fakeCtx
+        : context === 'highlight'
+        ? this.highlightCtx
+        : this.ctx;
+
+    if (context === 'fake') {
       const color = this.genColor();
       ctx.fillStyle = color;
-      this.colorToNode[color] = node;
+      this.colorToNode[color] = `${playerId}-${pos.frameIdx}`;
+    } else if (context === 'real') {
+      const rgb = this.idToRgb[playerId];
+      ctx.fillStyle = `rgba(${rgb[0]}, ${rgb[1]}, ${rgb[2]}, ${
+        this.frame == null ? 0.05 : 0.01
+      }`;
     } else {
-      const rgb = this.idToRgb[+node.attr('playerid')];
-      ctx.fillStyle = `rgba(${rgb[0]}, ${rgb[1]}, ${rgb[2]}, ${getOpacity(
-        this.frame == null
-          ? {}
-          : {
-              highlight: +node.attr('frameIdx') === this.frame,
-              antihighlight: +node.attr('frameIdx') !== this.frame,
-            }
-      )}`;
+      const rgb = this.idToRgb[playerId];
+      ctx.fillStyle = `rgba(${rgb[0]}, ${rgb[1]}, ${rgb[2]}, 1)`;
     }
 
-    // ctx.beginPath();
-    // ctx.arc(
-    //   +node.attr('x') + this.width / 2,
-    //   -+node.attr('y') + this.height / 2,
-    //   4,
-    //   0,
-    //   2 * Math.PI
-    // );
-    // ctx.fill();
-    // ctx.closePath();
-
     ctx.fillRect(
-      +node.attr('x') + this.width / 2 - 3,
-      -+node.attr('y') + this.height / 2 - 3,
+      pos.positionX + this.width / 2 - 3,
+      -pos.positionY + this.height / 2 - 3,
       6,
       6
     );
-    // ctx.fillRect(x - 20 + this.width / 2, y - 20 + this.height / 2, 40, 40);
   }
 
   redraw(preserveFake?: boolean) {
     this.clear(preserveFake);
-    this.fakeContainer.selectAll(`.dot`).each((d, i, nodes) => {
-      const node = d3.select(nodes[i]);
-      // console.log(node.attr('playerid'));
 
-      if (
-        this.selectedPlayer != null &&
-        +node.attr('playerid') != this.selectedPlayer
-      ) {
-        return;
-      }
-      if (
-        this.currentFrames[0] < +node.attr('frameIdx') &&
-        +node.attr('frameIdx') < this.currentFrames[1]
-      ) {
-        if (!preserveFake) this.drawCircle(node, true);
-        this.drawCircle(node, false);
-      }
-    });
+    if (this.currentFrames == null) {
+      return;
+    }
+    for (let i = this.currentFrames[0]; i < this.currentFrames[1]; i++) {
+      this.playerIds.forEach(id => {
+        if (this.selectedPlayer != null && id != this.selectedPlayer) {
+          return;
+        }
+        const pos = this.positions[id][i];
+        if (!preserveFake) this.drawCircle(id, pos, 'fake');
+        this.drawCircle(id, pos, 'real');
+      });
+    }
+  }
+
+  highlight(oldFrame: number | null, newFrame: number | null) {
+    const ctx = this.highlightCtx;
+
+    if (oldFrame != null) {
+      this.playerIds.forEach(id => {
+        const pos = this.positions[id][oldFrame];
+
+        ctx.clearRect(
+          pos.positionX + this.width / 2 - 5,
+          -pos.positionY + this.height / 2 - 5,
+          10,
+          10
+        );
+      });
+    }
+
+    if (newFrame != null) {
+      this.playerIds.forEach(id => {
+        const pos = this.positions[id][newFrame];
+        const rgb = this.idToRgb[id];
+        ctx.fillStyle = `rgba(${rgb[0]}, ${rgb[1]}, ${rgb[2]}, 1)`;
+
+        ctx.fillRect(
+          pos.positionX + this.width / 2 - 4,
+          -pos.positionY + this.height / 2 - 4,
+          8,
+          8
+        );
+      });
+    }
   }
 
   mouseMove(e: React.MouseEvent<HTMLCanvasElement, MouseEvent>) {
-    const x = e.pageX - this.canvas.offsetLeft;
-    const y = e.pageY - this.canvas.offsetTop;
+    const x = e.pageX - this.canvas.getBoundingClientRect().left;
+    const y = e.pageY - this.canvas.getBoundingClientRect().top;
     const color = this.fakeCtx.getImageData(
       x * window.devicePixelRatio,
       y * window.devicePixelRatio,
       1,
       1
     ).data;
+
     const hex =
       '#' +
       ((1 << 24) + (color[0] << 16) + (color[1] << 8) + color[2])
@@ -238,14 +231,20 @@ export default class HeatmapD3 {
 
     const node = this.colorToNode[hex];
     if (node != null) {
-      return +node.attr('frameIdx');
+      return +node.split('-')[1];
     }
     return null;
   }
 
   updateFrame(frame: number) {
+    const oldFrame = this.frame;
     this.frame = frame;
-    this.redraw(true);
+
+    this.highlight(oldFrame, frame);
+
+    if (oldFrame == null || frame == null) {
+      this.redraw(true);
+    }
   }
 
   updateColors(idToRgb: Record<number, [number, number, number]>) {

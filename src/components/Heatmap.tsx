@@ -52,19 +52,31 @@ const Map = ({
   }, [idToRgb]);
 
   return (
-    <div ref={ref}>
+    <div ref={ref} style={{ position: 'relative' }}>
       <canvas
         width="500"
         height="400"
-        id="real"
-        style={{ border: `1px solid black` }}
+        id="highlight"
+        style={{ position: 'absolute', border: `1px solid black` }}
         onMouseMove={e => {
           if (vis) {
             const newFrame = vis.mouseMove(e);
             setFrame(newFrame);
           }
         }}
-      ></canvas>
+      />
+      <canvas
+        width="500"
+        height="400"
+        id="real"
+        style={{ border: `1px solid black` }}
+        onMouseMove={e => {
+          // if (vis) {
+          //   const newFrame = vis.mouseMove(e);
+          //   setFrame(newFrame);
+          // }
+        }}
+      />
       <canvas
         width="500"
         height="400"
