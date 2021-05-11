@@ -42,6 +42,8 @@ export default class HeatmapD3 {
   height: number;
   selectedPlayer: number;
   idToRgb: Record<number, [number, number, number]>;
+  paletteCanvas: HTMLCanvasElement;
+  paletteCtx: CanvasRenderingContext2D;
 
   constructor(
     containerEl: HTMLDivElement,
@@ -63,8 +65,13 @@ export default class HeatmapD3 {
       .select('canvas#fake')
       .node() as HTMLCanvasElement;
 
+    this.paletteCanvas = this.container
+      .select('canvas#real')
+      .node() as HTMLCanvasElement;
+
     this.fakeCtx = fakeCanvas.getContext('2d');
     this.ctx = this.canvas.getContext('2d');
+    this.paletteCtx = this.paletteCanvas.getContext('2d');
 
     this.width = +this.canvas.width;
     this.height = +this.canvas.height;
@@ -172,16 +179,23 @@ export default class HeatmapD3 {
       )}`;
     }
 
-    ctx.beginPath();
-    ctx.arc(
-      +node.attr('x') + this.width / 2,
-      -+node.attr('y') + this.height / 2,
-      4,
-      0,
-      2 * Math.PI
+    // ctx.beginPath();
+    // ctx.arc(
+    //   +node.attr('x') + this.width / 2,
+    //   -+node.attr('y') + this.height / 2,
+    //   4,
+    //   0,
+    //   2 * Math.PI
+    // );
+    // ctx.fill();
+    // ctx.closePath();
+
+    ctx.fillRect(
+      +node.attr('x') + this.width / 2 - 3,
+      -+node.attr('y') + this.height / 2 - 3,
+      6,
+      6
     );
-    ctx.fill();
-    ctx.closePath();
     // ctx.fillRect(x - 20 + this.width / 2, y - 20 + this.height / 2, 40, 40);
   }
 

@@ -29,12 +29,10 @@ const Game = () => {
   const [loadState, setLoadState] = useState<LoadState>(LoadState.LOADING);
   const [origData, setOrigData] = useState<Data | null>(null);
   const [frameWindow, setFrameWindow] = useState<3600 | 60>(3600);
-  const [distanceDirection, setDistanceDirection] = useState<DistanceDirection>(
-    'none'
-  );
-  const [idToRgb, setIdToRgb] = useState<
-    Record<number, [number, number, number]>
-  >(DEFAULT_COLORS);
+  const [distanceDirection, setDistanceDirection] =
+    useState<DistanceDirection>('none');
+  const [idToRgb, setIdToRgb] =
+    useState<Record<number, [number, number, number]>>(DEFAULT_COLORS);
 
   const [currentFrames, setCurrentFrames] = useState<[number, number]>(null);
   const canCalc = origData != null && currentFrames != null;
@@ -99,7 +97,7 @@ const Game = () => {
       try {
         const res2 = await fetch_retry(20, url);
         const data: Data = await res2.json();
-        console.log(data.frames[0].players[0]);
+        // console.log(data.frames[0].players[0]);
         // console.log(data.inputs[0][1201]);
         setOrigData(data);
         setCurrentFrames([0, data.stats.lastFrame]);
@@ -309,10 +307,12 @@ const Game = () => {
           toggle={() =>
             setDistanceDirection(
               d =>
-                (({ v: 'none', none: 'h', h: 'v' } as Record<
-                  DistanceDirection,
-                  DistanceDirection
-                >)[d])
+                ((
+                  { v: 'none', none: 'h', h: 'v' } as Record<
+                    DistanceDirection,
+                    DistanceDirection
+                  >
+                )[d])
             )
           }
         />
