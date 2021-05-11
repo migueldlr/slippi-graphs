@@ -24,6 +24,7 @@ import Heatmap from '../../components/Heatmap';
 import { ActionCountsType } from '@slippi/slippi-js';
 import Link from 'next/link';
 import { DEFAULT_COLORS, getRGBFromCSS, rgbToHex } from '../../util/colors';
+import LoadingTip from '../../components/LoadingTip';
 
 const Game = () => {
   const [loadState, setLoadState] = useState<LoadState>(LoadState.LOADING);
@@ -122,6 +123,7 @@ const Game = () => {
         <Head>
           <title>Loading... - Slippi Graphs</title>
         </Head>
+        <LoadingTip />
         <Spinner />
       </div>
     );
