@@ -10,6 +10,7 @@ import {
   frameCountToSeconds,
   getAPM,
   getPercents,
+  uniqueStates,
 } from '../../util/calc';
 import { Data, DistanceDirection, FlatData, LoadState } from '../../util/types';
 import { fetch_retry } from '../../util/util';
@@ -101,6 +102,12 @@ const Game = () => {
         // console.log(data.frames[0].players[0]);
         // console.log(data.inputs[0][1201]);
         setOrigData(data);
+        const states = uniqueStates(
+          data.frames,
+          Object.keys(data.metadata.players).map(id => +id)
+        )[0];
+        console.log(states);
+
         setCurrentFrames([0, data.stats.lastFrame]);
         setLoadState(LoadState.SUCCESS);
       } catch (e) {
@@ -196,6 +203,7 @@ const Game = () => {
               ? data.frames[frame].players[player].post
               : null
           }
+          character={+Object.keys(data.metadata.players[player].characters)[0]}
         />
       </div>
       <PlayerStats

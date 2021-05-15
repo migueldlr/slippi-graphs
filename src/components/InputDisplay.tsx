@@ -3,10 +3,12 @@ import { PostFrameUpdateType, PreFrameUpdateType } from '@slippi/slippi-js';
 import React, { useMemo, useRef } from 'react';
 import Image from 'next/image';
 import { ACTION_STATES } from '../util/actionStates';
+import { actionToName } from '../util/actions';
 
 interface Props {
   frame: PreFrameUpdateType | null;
   post: PostFrameUpdateType | null;
+  character: number;
 }
 
 const Z_MASK = 0b00000000_00010000;
@@ -22,7 +24,7 @@ const joystickScale = d3.scaleLinear().domain([-1, 1]).range([-28, 32]);
 const cstickScale = d3.scaleLinear().domain([-1, 1]).range([-22, 22]);
 const triggerScale = d3.scaleLinear().domain([0, 1]).range([0, 100]);
 
-const InputDisplay = ({ frame: initFrame, post }: Props) => {
+const InputDisplay = ({ frame: initFrame, post, character }: Props) => {
   const frame = initFrame ?? {
     joystickX: 0,
     joystickY: 0,
@@ -243,13 +245,7 @@ const InputDisplay = ({ frame: initFrame, post }: Props) => {
       </div>
       <div>
         <p style={{ marginTop: 0 }}>
-          {action == null ? (
-            <>&nbsp;</>
-          ) : action.notes.length > 0 ? (
-            action.notes
-          ) : (
-            action.state
-          )}
+          {actionToName(action, character)}
           {post?.hurtboxCollisionState != null ? <br /> : null}
           {post?.hurtboxCollisionState === 1
             ? 'invulnerable'

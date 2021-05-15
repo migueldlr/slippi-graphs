@@ -231,6 +231,22 @@ export function countConversionStarts(
   return out;
 }
 
+export function uniqueStates(frames: FramesType, playerIds: number[]) {
+  const out: Record<number, number[]> = {};
+
+  for (let id in playerIds) {
+    const arr: number[] = [];
+
+    for (let frame in frames) {
+      arr.push(frames[frame].players[id].pre.actionStateId);
+    }
+
+    out[id] = arr;
+  }
+
+  return out;
+}
+
 export const frameCountToSeconds = (frame: number) => {
   const seconds = frame / 60;
   return `${Math.floor(seconds / 60)}:${(Math.floor(seconds) % 60)
